@@ -1,0 +1,31 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ medicine.name }} - Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row gap-8 p-6 md:p-10 max-w-6xl mx-auto">
+    
+    <!-- صورة الدواء -->
+    <div class="md:w-1/2 flex justify-center items-center bg-gray-100 rounded-2xl p-4">
+        <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}" class="object-contain h-96 w-full rounded-lg shadow-inner">
+    </div>
+
+    <!-- معلومات الدواء -->
+    <div class="md:w-1/2 flex flex-col justify-between">
+        <div>
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">{{ medicine.name }}</h1>
+            <p class="text-gray-700 mb-4 leading-relaxed">{{ medicine.description }}</p>
+            <p class="text-green-600 font-bold text-2xl mb-2">Price: ${{ medicine.price }}</p>
+            <p class="text-gray-600 mb-6">Stock: <span class="font-semibold">{{ medicine.stock }}</span></p>
+        </div>
+
+        <!-- زر الإضافة للعربة -->
+        <div>
+            <a href="{% url 'store:add_to_cart' medicine.id %}"
+               class="w-full md:w-auto inline-block text-center bg-blue-600 text-white font-semibold px-6 py-3 rounded-2xl shadow-lg hover:bg-blue-700 transition duration-300">
+               Add to Cart
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

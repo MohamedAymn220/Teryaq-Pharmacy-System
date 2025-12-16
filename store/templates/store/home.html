@@ -1,0 +1,294 @@
+{% extends 'store/base.html' %}
+    
+{% block title %}Home - Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+
+<!-- =============== Dashboard Button =============== -->
+ <!-- <style>
+    header {
+    top: 35px; 
+}
+ </style>
+  <br> -->
+ <!-- ================= TOP BANNER خصم 50% ================= -->
+ 
+<!--   
+<div class="bg-red-600 text-white text-center py-2 w-full fixed top-0 left-0 z-50">
+    <p class="text-sm font-semibold">
+        خصم 50% على أول أوردر لك! استخدم الكود: 
+        <span class="underline font-bold">NEW50</span>
+    </p>
+</div> -->
+
+<!-- ================= Carousel Section ================= -->
+
+<div class="carousel-container relative w-full overflow-hidden">
+    <!-- Track -->
+    <div id="carouselTrack" class="flex transition-transform duration-1000 ease-in-out">
+        <!-- Slides -->
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/03-1720x468-min_1763013904.png" 
+                 alt="إعلان نيفيا الكامل" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/9lmVxpxubK5O7kIN1wNRJWFER6nGBqOFfFZE2OxG.png" 
+                 alt="إعلان منتج جديد" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/VB83Mt4Y432LwpPKHwwYHBY9GwT9KQc2KkpjWx1G.png" 
+                 alt="عرض خاص" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/SwIS7FvsTLPcOkoUKHBmYYawmjt8nMIZOKyCWhXT.jpg" 
+                 alt="صورة رابعة" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/fTEoOFt8T8FwReGpom0elXoVUavT2EwCBUn0pkcK.png" 
+                 alt="صورة خامسة" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96">
+            <img src="{{ MEDIA_URL }}image/SJogfhHbI0wqkLsmM8IOhp2ZOxJcDGtaDoZHTvyC.png" 
+                 alt="عرض خاص" 
+                 class="w-full h-full object-cover rounded-lg shadow-md" />
+        </div>
+
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/VCeQAYSp61CBAA4iTHbjA7eBupyU4tm8x4iQl5wg.jpg" 
+                 alt="صورة سادسة" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+        <div class="carousel-slide flex-shrink-0 w-full h-64 md:h-80 lg:h-96 flex items-center justify-center bg-gray-100">
+            <img src="{{ MEDIA_URL }}image/qRFSNGvR8qrqMI1pyCFGgTZhmfl9Z3crHVx64Xa5.png" 
+                 alt="صورة سادسة" 
+                 class="object-contain w-full h-full rounded-lg shadow-md" />
+        </div>
+         
+
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button id="prevBtn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 z-10">
+        &#10094;
+    </button>
+    <button id="nextBtn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 z-10">
+        &#10095;
+    </button>
+</div>
+
+
+<script>
+const track = document.getElementById('carouselTrack');
+let slides = document.querySelectorAll('.carousel-slide');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+let currentIndex = 0;
+
+function updateCarousel() {
+    const width = slides[0].clientWidth;
+    track.style.transform = `translateX(-${currentIndex * width}px)`;
+}
+
+// زر next
+nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateCarousel();
+});
+
+// زر prev
+prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateCarousel();
+});
+
+// الانتقال التلقائي كل 4 ثواني
+setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateCarousel();
+}, 4000);
+
+// تعديل عند تغيير حجم الشاشة
+window.addEventListener('resize', () => {
+    slides = document.querySelectorAll('.carousel-slide');
+    updateCarousel();
+});
+</script>
+
+<!-- ================= Categories Section ================= -->
+
+
+
+
+<section class="my-12">
+   <h2 class="text-4xl font-bold mb-6 text-center text-gray-800">
+    Categories
+</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6">
+        {% for category in categories %}
+        <a href="{% url 'store:category_detail' category.id %}" 
+           class="flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg p-4 transition">
+            {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" 
+                     class="w-20 h-20 object-cover rounded mb-2">
+            {% else %}
+                <div class="w-20 h-20 bg-gray-200 rounded mb-2 flex items-center justify-center">
+                    <span class="text-gray-500 text-sm">No Image</span>
+                </div>
+            {% endif %}
+            <span class="text-center text-sm font-medium">{{ category.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+
+
+
+<!-- ================= Medicines Section ================= -->
+<section>
+  <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">
+    Medicines & Products
+</h2>
+
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {% for medicine in medicines %}
+        <div class="bg-white p-5 rounded-lg shadow hover:shadow-xl transition-transform transform hover:scale-105 flex flex-col">
+            <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}" 
+                 class="w-full h-40 object-cover rounded mb-3">
+            
+            <h3 class="font-bold text-xl mb-1 text-gray-800">{{ medicine.name }}</h3>
+            
+            <p class="text-black font-bold text-lg mb-3 text-left bg-gray-100 px-2 py-1 rounded inline-block">
+                {{ medicine.price }} جنيه
+            </p>
+
+            <a href="{% url 'store:add_to_cart' medicine.id %}" 
+               class="bg-blue-600 text-white px-3 py-2 rounded text-center font-semibold mb-2 hover:bg-blue-700 transition w-full">
+                أضف للعربة
+            </a>
+
+            <a href="{% url 'store:medicine_detail' medicine.id %}" 
+               class="bg-green-600 text-white px-3 py-1.5 rounded text-center font-semibold hover:bg-green-700 transition w-full">
+                التفاصيل
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="w-full">
+    <div class="w-full">
+        <img src="{{ MEDIA_URL }}image/home-full-width-slider-ads-_-mid-home-slider-web_--2-_1764060909.jpg"
+             alt="صورة سادسة"
+             class="w-full h-auto rounded-lg shadow-md object-contain" />
+    </div>
+</section>
+
+
+
+
+<!-- ================= Testimonials Section ================= -->
+<section class="my-14">
+    <h2 class="text-3xl font-bold mb-10 text-center text-gray-800">
+        مدي رضا العملاء عنا
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-red-100">
+            <span class="absolute top-4 right-4 text-4xl text-red-400 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                خدمة رائعة! المنتجات وصلت بسرعة وجودتها ممتازة.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                أحمد علي <span class="text-gray-500">– 12 ديسمبر 2025</span>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-green-100">
+            <span class="absolute top-4 right-4 text-4xl text-green-400 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                تجربة شراء سهلة وسريعة، أنصح الجميع بهذه الصيدلية.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                منى محمد <span class="text-gray-500">– 10 ديسمبر 2025</span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-blue-100">
+            <span class="absolute top-4 right-4 text-4xl text-blue-400 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                أسعار جيدة وخدمة عملاء ممتازة، سعيد جدًا بالتعامل معهم.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                خالد سمير <span class="text-gray-500">– 8 ديسمبر 2025</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= Testimonials Section 2 ================= -->
+<section class="my-14">
+    <h2 class="text-3xl font-bold mb-10 text-center text-gray-800">
+        آراء العملاء عن الموقع والخدمة
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-yellow-100">
+            <span class="absolute top-4 right-4 text-4xl text-yellow-500 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                الموقع سهل الاستخدام جدًا، وكل شيء واضح من البداية للنهاية.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                ليلى حسني <span class="text-gray-500">– 11 ديسمبر 2025</span>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-purple-100">
+            <span class="absolute top-4 right-4 text-4xl text-purple-500 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                التعامل مع فريق الدعم ممتاز جدًا، سريعين في الرد ومفيدين.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                سامح عبد الله <span class="text-gray-500">– 9 ديسمبر 2025</span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="relative p-8 rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 bg-pink-100">
+            <span class="absolute top-4 right-4 text-4xl text-pink-500 opacity-30">“</span>
+            <p class="text-gray-800 mb-6 text-lg font-semibold leading-relaxed">
+                المصداقية عالية، المنتجات دائمًا مطابقة للوصف وموثوقة.
+            </p>
+            <div class="border-t pt-3 text-sm text-gray-700 font-medium">
+                مها علي <span class="text-gray-500">– 7 ديسمبر 2025</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="w-full">
+    <div class="w-full">
+        <img src="{{ MEDIA_URL }}image/image4_.png"
+             alt="صورة سادسة"
+             class="w-full h-auto rounded-lg shadow-md object-contain" />
+    </div>
+</section>
+
+
+{% endblock %}

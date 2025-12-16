@@ -1,0 +1,211 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 py-10">
+
+    <!-- Page Title -->
+    <div class="mb-10 text-center">
+        <h1 class="text-4xl font-extrabold text-gray-800">Admin Dashboard</h1>
+        <p class="text-gray-500 mt-2">Manage categories and medicines easily</p>
+    </div>
+
+    <!-- ================= FORMS ================= -->
+    <div class="space-y-10 mb-16">
+
+        {% if category_form %}
+        <div class="bg-white shadow-lg rounded-xl p-8 max-w-xl mx-auto border">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">
+                {{ category_form_title }}
+            </h3>
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {{ category_form.non_field_errors }}
+
+                {% for field in category_form %}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="flex items-center gap-3 pt-4">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
+                        Save
+                    </button>
+                    <a href="{% url 'store:dashboard' %}" class="text-gray-500 hover:underline">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if medicine_form %}
+        <div class="bg-white shadow-lg rounded-xl p-8 max-w-xl mx-auto border">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">
+                {{ medicine_form_title }}
+            </h3>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-5">
+                {% csrf_token %}
+                {{ medicine_form.non_field_errors }}
+
+                {% for field in medicine_form %}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="flex items-center gap-3 pt-4">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
+                        Save
+                    </button>
+                    <a href="{% url 'store:dashboard' %}" class="text-gray-500 hover:underline">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- ================= CATEGORIES ================= -->
+    <div class="mb-16">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Categories</h2>
+            <a href="{% url 'store:add_category' %}"
+               class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
+                + Add Category
+            </a>
+        </div>
+
+        <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-semibold">ID</th>
+                        <th class="px-6 py-4 text-left font-semibold">Name</th>
+                        <th class="px-6 py-4 text-left font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">{{ category.id }}</td>
+                        <td class="px-6 py-4 font-medium">{{ category.name }}</td>
+                        <td class="px-6 py-4 space-x-3">
+                            <a href="{% url 'store:category_edit' category.id %}"
+                               class="text-blue-600 hover:underline font-medium">
+                                Edit
+                            </a>
+                            <a href="{% url 'store:category_delete' category.id %}"
+                               class="text-red-600 hover:underline font-medium">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="px-6 py-6 text-center text-gray-500">
+                            No categories added yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= MEDICINES ================= -->
+    <div>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Medicines</h2>
+            <a href="{% url 'store:add_medicine' %}"
+               class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
+                + Add Medicine
+            </a>
+        </div>
+
+        <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-semibold">ID</th>
+                        <th class="px-6 py-4 text-left font-semibold">Name</th>
+                        <th class="px-6 py-4 text-left font-semibold">Price</th>
+                        <th class="px-6 py-4 text-left font-semibold">Stock</th>
+                        <th class="px-6 py-4 text-left font-semibold">Category</th>
+                        <th class="px-6 py-4 text-left font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">{{ medicine.id }}</td>
+
+                        <td class="px-6 py-4 font-medium">
+                            {{ medicine.name }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ medicine.price }} EGP
+                        </td>
+
+                        <!-- STOCK -->
+                        <td class="px-6 py-4">
+                            {% if medicine.stock > 0 %}
+                                <span class="text-green-600 font-semibold">
+                                    {{ medicine.stock }}
+                                </span>
+                            {% else %}
+                                <span class="text-red-600 font-semibold">
+                                    Out of stock
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ medicine.category.name }}
+                        </td>
+
+                        <td class="px-6 py-4 space-x-3">
+                            <a href="{% url 'store:medicine_edit' medicine.id %}"
+                               class="text-blue-600 hover:underline font-medium">
+                                Edit
+                            </a>
+                            <a href="{% url 'store:medicine_delete' medicine.id %}"
+                               class="text-red-600 hover:underline font-medium">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-6 text-center text-gray-500">
+                            No medicines added yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

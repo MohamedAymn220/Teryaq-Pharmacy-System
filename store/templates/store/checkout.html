@@ -1,0 +1,32 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Checkout - Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center" >✅ إتمام الدفع</h1>
+
+    <!-- Card summary -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">ملخص الطلب</h2>
+        <div class="flex justify-between border-b pb-2 mb-2">
+            <span class="font-medium text-gray-600">عدد المنتجات:</span>
+            <span class="font-bold text-gray-800">{{ cart_items|length }}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2 mb-2">
+            <span class="font-medium text-gray-600">الإجمالي:</span>
+            <span class="font-bold text-red-600">{{ total }} جنيه</span>
+        </div>
+        <p class="text-gray-500 mt-2 text-sm">يرجى التأكد من صحة بيانات الطلب قبل تأكيد الدفع.</p>
+    </div>
+
+    <!-- Checkout form -->
+    <form method="post" class="bg-white p-6 rounded-lg shadow-lg">
+        {% csrf_token %}
+        <!-- هنا ممكن تضيف حقول الدفع لو تحب مثل الاسم، البريد، طريقة الدفع... -->
+        <button type="submit" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+            تأكيد الدفع
+        </button>
+    </form>
+</div>
+{% endblock %}

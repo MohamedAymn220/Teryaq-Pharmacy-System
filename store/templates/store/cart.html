@@ -1,0 +1,162 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block title %}عربة التسوق - Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col justify-between">
+    <div class="max-w-6xl mx-auto p-6 flex-grow">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center">عربة التسوق</h1>
+
+        {% if cart_items %}
+        <div class="overflow-x-auto">
+            <table class="w-full bg-white rounded-lg shadow-lg">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-3 text-left text-gray-700">المنتج</th>
+                        <th class="p-3 text-center text-gray-700">الكمية</th>
+                        <th class="p-3 text-right text-gray-700">السعر الفرعي</th>
+                        <th class="p-3 text-center text-gray-700">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr class="border-b hover:bg-gray-50 transition"
+                        data-item-id="{{ item.medicine.id }}"
+                        data-stock="{{ item.medicine.stock }}">
+
+                        <td class="p-3 flex items-center gap-3">
+                            <img src="{{ item.medicine.image.url }}" alt="{{ item.medicine.name }}"
+                                 class="w-16 h-16 object-cover rounded">
+                            <span class="font-medium text-gray-800">{{ item.medicine.name }}</span>
+                        </td>
+
+                        <td class="p-3 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="decrease px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                        data-id="{{ item.medicine.id }}">-</button>
+
+                                <span class="quantity font-medium">{{ item.quantity }}</span>
+
+                                <button class="increase px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                        data-id="{{ item.medicine.id }}">+</button>
+                            </div>
+                        </td>
+
+                        <td class="p-3 text-right font-bold text-gray-900">
+                            <span class="subtotal">{{ item.subtotal }}</span> جنيه
+                        </td>
+
+                        <td class="p-3 text-center">
+                            <form method="POST" action="{% url 'store:remove_from_cart' item.medicine.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                                    حذف
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row justify-between items-center">
+            <p class="text-2xl font-extrabold text-gray-900">
+                الإجمالي: <span id="total">{{ total }}</span> جنيه
+            </p>
+            <a href="{% url 'store:checkout' %}"
+               class="mt-3 sm:mt-0 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+                إتمام الدفع
+            </a>
+        </div>
+
+        {% else %}
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg shadow-md text-center">
+            <p class="text-lg font-semibold">!عربة التسوق فارغة</p>
+            <p class="mt-2 text-gray-700">أضف بعض المنتجات للمتابعة</p>
+            <a href="{% url 'store:medicine_list' %}"
+               class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                تصفح المنتجات
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            document.cookie.split(';').forEach(cookie => {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function updateQuantity(medicineId, newQty, row) {
+        fetch(`/cart/update/${medicineId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ quantity: newQty })
+        })
+        .then(res => res.json())
+        .then(data => {
+            row.querySelector('.quantity').textContent = data.quantity;
+            row.querySelector('.subtotal').textContent = data.subtotal;
+            document.getElementById('total').textContent = data.total;
+        });
+    }
+
+    document.querySelectorAll('.increase').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const row = btn.closest('tr');
+            const stock = parseInt(row.dataset.stock);
+            let qty = parseInt(row.querySelector('.quantity').textContent);
+
+            if (qty < stock) {
+                qty++;
+                updateQuantity(btn.dataset.id, qty, row);
+            }
+
+            if (qty >= stock) {
+                btn.classList.add('hidden');
+            }
+        });
+    });
+
+    document.querySelectorAll('.decrease').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const row = btn.closest('tr');
+            let qty = parseInt(row.querySelector('.quantity').textContent);
+            const increaseBtn = row.querySelector('.increase');
+
+            if (qty > 1) {
+                qty--;
+                updateQuantity(btn.dataset.id, qty, row);
+                increaseBtn.classList.remove('hidden');
+            }
+        });
+    });
+
+    
+    document.querySelectorAll('tr[data-stock]').forEach(row => {
+        const stock = parseInt(row.dataset.stock);
+        const qty = parseInt(row.querySelector('.quantity').textContent);
+        if (qty >= stock) {
+            row.querySelector('.increase').classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endblock %}
