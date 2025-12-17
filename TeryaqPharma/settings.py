@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-@#s(@n$+=nao=!b70(+0dh-m179k%8t!@i%47277!ppv6jx1x4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -120,7 +120,8 @@ LOGOUT_REDIRECT_URL = '/'
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+STATICFILES_DIRS = [  ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 import os
 MEDIA_URL = '/media/'  # الرابط الظاهر في المتصفح
 MEDIA_ROOT = BASE_DIR / 'media'  # مكان تخزين الصور على جهازك
