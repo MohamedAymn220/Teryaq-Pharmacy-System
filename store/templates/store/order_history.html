@@ -1,0 +1,157 @@
+{% extends 'store/base.html' %}
+
+{% block title %}My Orders - Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6 animate-fade-in-up">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            <span>My Orders</span>
+        </h2>
+        <p class="text-gray-500 mt-2 text-sm">Track and manage your order history</p>
+    </div>
+
+    {% if orders %}
+    <div class="space-y-4">
+        {% for order in orders %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 card-hover">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                <div>
+                    <p class="text-lg font-bold text-gray-900">Order #{{ order.id }}</p>
+                    <p class="text-sm text-gray-500 mt-1">{{ order.created_at|date:"F d, Y - g:i A" }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    {% with status=order.status %}
+                    <span class="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2
+                        {% if status == 'pending' %}bg-yellow-100 text-yellow-700 border border-yellow-200
+                        {% elif status == 'confirmed' %}bg-blue-100 text-blue-700 border border-blue-200
+                        {% elif status == 'processing' %}bg-purple-100 text-purple-700 border border-purple-200
+                        {% elif status == 'shipped' %}bg-indigo-100 text-indigo-700 border border-indigo-200
+                        {% elif status == 'delivered' %}bg-emerald-100 text-emerald-700 border border-emerald-200
+                        {% elif status == 'cancelled' %}bg-red-100 text-red-700 border border-red-200
+                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                        {% if status == 'pending' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Pending
+                        {% elif status == 'confirmed' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        Confirmed
+                        {% elif status == 'processing' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
+                        Processing
+                        {% elif status == 'shipped' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Shipped
+                        {% elif status == 'delivered' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Delivered
+                        {% elif status == 'cancelled' %}
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        Cancelled
+                        {% endif %}
+                    </span>
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="font-medium">{{ order.items.count }} item(s)</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-bold text-emerald-600">{{ order.total_price }} <span class="text-sm text-gray-500">EGP</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between">
+                <a href="{% url 'store:order_detail' order.id %}" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View Details
+                </a>
+                <span class="text-sm text-gray-400">Placed on {{ order.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <div class="flex items-center justify-center gap-2 mt-10">
+        {% if orders.has_previous %}
+        <a href="?page={{ orders.previous_page_number }}" class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all duration-300 text-sm font-medium shadow-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            Previous
+        </a>
+        {% endif %}
+        {% for num in orders.paginator.page_range %}
+            {% if orders.number == num %}
+            <span class="w-10 h-10 flex items-center justify-center bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-md">{{ num }}</span>
+            {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+            <a href="?page={{ num }}" class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-300 text-sm shadow-sm">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if orders.has_next %}
+        <a href="?page={{ orders.next_page_number }}" class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-all duration-300 text-sm font-medium shadow-sm">
+            Next
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty Orders State - Premium Design -->
+    <div class="empty-state bg-white rounded-2xl shadow-sm border border-gray-100 animate-fade-in-up">
+        <div class="max-w-md mx-auto px-6 py-12">
+            <!-- Animated Icon Container -->
+            <div class="empty-state-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            
+            <!-- Title -->
+            <h2 class="empty-state-title">No orders yet</h2>
+            
+            <!-- Description -->
+            <p class="empty-state-description">
+                You haven't placed any orders yet. Start shopping and your orders will appear here!
+            </p>
+            
+            <!-- CTA Button -->
+            <a href="{% url 'store:medicine_list' %}"
+               class="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Start Shopping
+            </a>
+            
+            <!-- Additional Info -->
+            <div class="mt-12 pt-8 border-t border-gray-100">
+                <p class="text-sm text-gray-400 mb-4">Why not explore these?</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <a href="{% url 'store:medicine_list' %}" class="px-4 py-2 bg-gray-50 text-gray-600 rounded-full text-sm hover:bg-emerald-50 hover:text-emerald-600 transition-colors duration-200">Medicines</a>
+                    <a href="{% url 'store:medicine_list' %}" class="px-4 py-2 bg-gray-50 text-gray-600 rounded-full text-sm hover:bg-emerald-50 hover:text-emerald-600 transition-colors duration-200">Supplements</a>
+                    <a href="{% url 'store:medicine_list' %}" class="px-4 py-2 bg-gray-50 text-gray-600 rounded-full text-sm hover:bg-emerald-50 hover:text-emerald-600 transition-colors duration-200">Health Care</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

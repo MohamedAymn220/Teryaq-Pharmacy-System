@@ -10,6 +10,15 @@ urlpatterns = [
 
     # Categories
     path('category/<int:id>/', views.category_detail, name='category_detail'),
+    path('category/<int:category_id>/medicines/', views.medicines_by_category, name='category_medicines'),
+
+    # Search
+    path('search/', views.search_medicines, name='search'),
+
+    # User Profile & Orders
+    path('profile/', views.user_profile, name='profile'),
+    path('orders/', views.order_history, name='order_history'),
+    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
 
     # CRUD
     path('dashboard/', views.dashboard, name='dashboard'),
@@ -23,13 +32,13 @@ urlpatterns = [
 
     # Cart
     path('cart/', views.cart_view, name='cart'),
-    path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart'),
-    path('cart/update/<int:id>/', views.update_cart_quantity, name='update_cart_quantity'),
-    path('cart/remove/<int:id>/', views.remove_from_cart, name='remove_from_cart'),  # ← اضيفه
+    path('cart/add/<int:medicine_id>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/update/<int:item_id>/', views.update_cart_quantity, name='update_cart_quantity'),
+    path('cart/update-form/<int:item_id>/', views.update_cart, name='update_cart'),
+    path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
-   path('order-success/<int:order_id>/', views.order_success, name='order_success'),
+    path('order-success/<int:order_id>/', views.order_success, name='order_success'),
     path('ajax/search/', views.ajax_search, name='ajax_search'),
-
 
     # Auth
     path('auth/', views.auth_view, name='auth'),

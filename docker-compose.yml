@@ -1,0 +1,110 @@
+# TeryaqPharma Docker Compose
+# Development and Production Configuration
+
+services:
+  # ============================
+  # Web Application Service
+  # ============================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teryaqpharma_web
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    volumes:
+      # Mount local directory for development (overrides container files)
+      - .:/app
+      # Static files volume
+      - static_volume:/app/staticfiles
+      # Media files volume
+      - media_volume:/app/media
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=TeryaqPharma.settings
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - teryaq_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput --clear &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 --threads 2 TeryaqPharma.wsgi:application"
+
+  # ============================
+  # PostgreSQL Database Service
+  # ============================
+  db:
+    image: postgres:15-alpine
+    container_name: teryaqpharma_db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docs/db_init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-teryaq_db}
+      POSTGRES_USER: ${POSTGRES_USER:-teryaq_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-teryaq_password}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - teryaq_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-teryaq_user} -d ${POSTGRES_DB:-teryaq_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================
+  # Redis Cache Service (Optional)
+  # ============================
+  redis:
+    image: redis:7-alpine
+    container_name: teryaqpharma_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - teryaq_network
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+  # ============================
+  # Nginx Reverse Proxy (Production)
+  # ============================
+  nginx:
+    image: nginx:alpine
+    container_name: teryaqpharma_nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_SSL_PORT:-443}:443"
+    volumes:
+      - ./docs/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - web
+    networks:
+      - teryaq_network
+
+volumes:
+  postgres_data:
+    driver: local
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  teryaq_network:
+    driver: bridge

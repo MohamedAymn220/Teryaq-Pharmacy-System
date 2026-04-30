@@ -161,9 +161,12 @@ This architecture follows Django MVT with clear separation between presentation,
 ## 🧰 Tech Stack
 
 - **Backend:** Django (Python)
-- **Frontend:** HTML, Tailwind CSS
-- **Database:** SQLite (development)
-- **Auth:** Django Authentication System
+- **Frontend:** HTML, Tailwind CSS, JavaScript
+- **Database:** SQLite (development), PostgreSQL (production)
+- **Auth:** Django Authentication System with custom registration form
+- **Containerization:** Docker, Docker Compose
+- **Web Server:** Gunicorn, Nginx
+- **Caching:** Redis
 - **Version Control:** Git & GitHub
 
 ---
@@ -174,29 +177,41 @@ This architecture follows Django MVT with clear separation between presentation,
 Teryaq-Pharmacy-System/
 │
 ├── TeryaqPharma/              # Django Project Settings
+│   ├── settings.py            # Configuration (PostgreSQL, Redis, Security)
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
 │
 ├── store/                     # Main Application
 │   ├── migrations/
 │   ├── static/store/          # Static files (CSS, JS, Images)
 │   ├── templates/store/       # HTML Templates
+│   │   └── auth_complete.html # Sign In / Create Account page
 │   ├── admin.py
 │   ├── apps.py
-│   ├── forms.py
-│   ├── models.py              # Category, Medicine, Order, OrderItem
+│   ├── forms.py               # CustomUserCreationForm with Pharmacy fields
+│   ├── models.py              # Category, Medicine, Order, OrderItem, Cart
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
 │
+├── docs/                      # Documentation & Configs
+│   ├── nginx.conf             # Nginx reverse proxy configuration
+│   └── db_init.sql            # PostgreSQL initialization script
+│
 ├── media/                     # Uploaded media files
 │   ├── category_images/
-│   ├── medicines/
-│   └── image/
+│   └── medicines/
 │
+├── .env.example               # Environment variables template
+├── .dockerignore              # Docker ignore rules
+├── Dockerfile                 # Multi-stage Docker build
+├── docker-compose.yml         # Full stack orchestration
 ├── db.sqlite3                 # Development database
 ├── manage.py
 ├── README.md
-├── requirements.txt
-└── venv/
+├── requirements.txt           # Python dependencies
+└── runtime.txt                # Python version specification
 ```
 
 ---
@@ -218,13 +233,96 @@ Suitable for:
 
 ---
 
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.11+
+- PostgreSQL 15+ (for production)
+- Docker & Docker Compose (for containerized deployment)
+
+### Local Development (Without Docker)
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd TeryaqPharma
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   # Linux/Mac
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
+
+5. **Run migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Create superuser**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. **Start development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+### Production Deployment (With Docker)
+
+1. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your production settings
+   ```
+
+2. **Build and start containers**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+3. **Access the application**
+   - Web: http://localhost:8000
+   - Admin: http://localhost:8000/admin/
+
+4. **Stop containers**
+   ```bash
+   docker-compose down
+   ```
+
+### Key Features
+
+- **Custom Registration Form**: Includes Pharmacy Name and Phone fields
+- **PostgreSQL Support**: Production-ready database configuration
+- **Redis Caching**: Improved performance with Redis cache
+- **Nginx Reverse Proxy**: Static file serving and rate limiting
+- **Security Headers**: CSP, HSTS, X-Frame-Options configured
+
 ## 🚀 Future Enhancements
 
 - Online Payment Integration
 - Order Status Tracking
 - REST API (DRF)
 - Mobile App Support
-- Advanced User Profiles
+- Advanced User Profiles with pharmacy-specific data
+- Email verification for new accounts
+- Password reset functionality
 
 ---
 

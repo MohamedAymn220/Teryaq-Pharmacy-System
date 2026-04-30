@@ -1,154 +1,469 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/x-icon" href="{% static 'store/images/images.png' %}">
     <title>{% block title %}Teryaq Pharmacy{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-down': 'slideDown 0.35s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- Premium Design System -->
+    <link rel="stylesheet" href="{% static 'store/design-system.css' %}">
+    
+    <style>
+        /* Custom styles for smooth scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Glassmorphism effects */
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Gradient backgrounds */
+        .gradient-emerald {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+        
+        .gradient-emerald-light {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Button loading state */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Toast notifications */
+        .toast {
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen text-gray-900">
 
 <!-- ================= HEADER ================= -->
-<header class="bg-green-600 text-white p-4 shadow-md fixed w-full z-50">
-  <div class="container mx-auto flex items-center justify-between">
+<header class="bg-white/80 backdrop-blur-md fixed w-full z-50 border-b border-gray-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      
+      <!-- Center: Logo (visible on desktop) -->
+      <a href="{% url 'store:home' %}" class="hidden lg:flex items-center gap-3 flex-shrink-0 mx-6 group">
+        <img src="{% static 'store/images/finished-logo.png' %}" alt="Teryaq Pharmacy Logo"
+             class="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-105" />
+      </a>
 
-    <!-- Logo -->
-    <div class="flex-shrink-0 flex items-center -ml-4 "> 
-      <a href="{% url 'store:home' %}">
-        <img
-          src="{% static 'store/images/Finised logo.png' %}"
-          alt="Teryaq Pharmacy Logo"
-          class="h-16 w-[370px] object-contain"
-        />
-      </a>
-    </div>
-
-   
-    <div class="hidden md:flex items-center space-x-10 font-semibold text-lg -ml-40"> <!-- قربت اللينكات أكتر للوجو -->
-      <a href="{% url 'store:home' %}" class="text-white px-3 py-1 rounded hover:bg-white hover:text-green-600 hover:shadow-md transition">
-        Home
-      </a>
-      <a href="{% url 'store:medicine_list' %}" class="text-white px-3 py-1 rounded hover:bg-white hover:text-green-600 hover:shadow-md transition">
-        Medicines
-      </a>
-      <!-- Categories -->
-      <div class="relative group">
-        <button class="hover:text-gray-200 focus:outline-none text-lg transition duration-300 px-3 py-1 rounded">
-          Categories ▾
-        </button>
-        <div class="absolute hidden group-hover:block bg-white text-black mt-2 rounded shadow-md min-w-[200px] z-50">
-          {% for category in categories %}
-          <a href="{% url 'store:category_detail' category.id %}" class="block px-4 py-2 hover:bg-gray-200">
-            {{ category.name }}
-          </a>
-          {% empty %}
-          <p class="px-4 py-2 text-gray-500">لا توجد فئات</p>
-          {% endfor %}
+      <!-- Center: Navigation Links (hidden on mobile) -->
+      <nav class="hidden lg:flex items-center space-x-1 flex-1 justify-center">
+        <a href="{% url 'store:home' %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-300 {% if request.resolver_match.url_name == 'home' %}text-emerald-700 bg-emerald-50{% endif %}">
+          Home
+        </a>
+        
+        <a href="{% url 'store:medicine_list' %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-300 {% if request.resolver_match.url_name == 'medicine_list' %}text-emerald-700 bg-emerald-50{% endif %}">
+          Medicines
+        </a>
+        
+        <!-- Categories Dropdown -->
+        <div class="relative group">
+          <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg flex items-center gap-1 transition-all duration-300">
+            Categories
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2 z-50 transform group-hover:translate-y-0 translate-y-2">
+            {% for category in categories %}
+            <a href="{% url 'store:category_detail' category.id %}" 
+               class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
+              {{ category.name }}
+            </a>
+            {% empty %}
+            <p class="px-4 py-2.5 text-sm text-gray-500">No categories</p>
+            {% endfor %}
+          </div>
         </div>
-      </div>
-    </div>
+      </nav>
 
-    <!-- Search -->
-    <div class="flex-1 relative max-w-lg -ml-14"> <!-- صغرت البوكس شويه وحركته للشمال -->
-      <input
-        type="text"
-        id="search-input"
-        placeholder="ابحث عن دواء..."
-        class="w-full border border-gray-300 rounded-full py-2 px-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-green-500 text-gray-900"
-      />
-      <!-- Search Icon -->
-      <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
-        </svg>
-      </div>
-      <div
-        id="search-results"
-        class="absolute mt-1 w-full rounded-lg shadow-lg max-h-64 overflow-y-auto z-50 hidden"
-        style="background-color:#F5E4D0; color:black;"
-      ></div>
-    </div>
-
-    <!-- Cart & Logout -->
-    <div class="flex items-center space-x-6 ml-4">
-      <a href="{% url 'store:cart' %}" class="relative mr-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9h14l-2-9M17 13H7"/>
-        </svg>
-        {% if request.session.cart %}
-        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-          {{ request.session.cart|length }}
-        </span>
-        {% endif %}
-      </a>
-
-      {% if request.user.is_authenticated %}
-      <form action="{% url 'store:logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
-          Logout
+      <!-- Right: Search, Cart & Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
         </button>
-      </form>
-      {% endif %}
-    </div>
 
+        <!-- Search Bar (hidden on small mobile) -->
+        <div class="hidden sm:block relative flex-1 max-w-xs mx-2">
+          <div class="relative group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search medicines..."
+              class="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-100 border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
+            />
+            <div
+              id="search-results"
+              class="absolute top-full left-0 mt-2 w-full rounded-xl shadow-xl border border-gray-100 max-h-80 overflow-y-auto z-50 hidden bg-white"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Cart Icon with Badge -->
+        <a href="{% url 'store:cart' %}" 
+           class="relative p-2.5 rounded-full hover:bg-emerald-50 transition-colors duration-300 group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 group-hover:text-emerald-600 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          {% if cart_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+            {{ cart_count }}
+          </span>
+          {% endif %}
+        </a>
+
+        <!-- Action Buttons (My Orders, Profile, Logout) -->
+        {% if request.user.is_authenticated %}
+          <!-- Desktop Actions (hidden on mobile) -->
+          <div class="hidden md:flex items-center gap-2">
+            <a href="{% url 'store:order_history' %}" 
+               class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors duration-300">
+              Orders
+            </a>
+            
+            <a href="{% url 'store:profile' %}" 
+               class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors duration-300">
+              Profile
+            </a>
+            
+            <form action="{% url 'store:logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button type="submit" 
+                      class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-300">
+                Logout
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <a href="{% url 'store:auth' %}" 
+             class="hidden md:inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-full transition-colors duration-300 shadow-md hover:shadow-lg">
+            Sign In
+          </a>
+        {% endif %}
+
+      </div>
+
+    </div>
   </div>
 </header>
 
+<!-- Mobile Menu Overlay -->
+<div id="mobile-menu" class="fixed inset-0 bg-white z-40 hidden overflow-y-auto pt-20">
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Mobile Search -->
+    <div class="mb-6 sm:hidden">
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search medicines..."
+          class="w-full pl-10 pr-4 py-3 text-sm bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        />
+      </div>
+    </div>
+
+    <!-- Close Button -->
+    <div class="flex justify-between items-center mb-6">
+      <span class="text-lg font-bold text-gray-800">Menu</span>
+      <button id="close-menu-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Links -->
+    <nav class="flex flex-col space-y-2">
+      <a href="{% url 'store:home' %}" class="px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+        Home
+      </a>
+      <a href="{% url 'store:medicine_list' %}" class="px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+        Medicines
+      </a>
+      
+      <!-- Mobile Categories -->
+      <div class="border-t border-gray-100 pt-2 mt-2">
+        <button class="w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300 flex items-center justify-between" 
+                onclick="document.getElementById('mobile-categories').classList.toggle('hidden')">
+          <span>Categories</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </button>
+        <div id="mobile-categories" class="hidden pl-4 space-y-1 mt-2">
+          {% for category in categories %}
+          <a href="{% url 'store:category_detail' category.id %}" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors duration-300">
+            {{ category.name }}
+          </a>
+          {% empty %}
+          <p class="px-4 py-2 text-sm text-gray-500">No categories</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Mobile Auth Actions -->
+      {% if request.user.is_authenticated %}
+      <div class="border-t border-gray-100 pt-2 mt-2 space-y-2">
+        <a href="{% url 'store:cart' %}" class="flex items-center justify-between px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+          <span>Cart</span>
+          {% if cart_count > 0 %}<span class="bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-full">{{ cart_count }}</span>{% endif %}
+        </a>
+        <a href="{% url 'store:order_history' %}" class="px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+          My Orders
+        </a>
+        <a href="{% url 'store:profile' %}" class="px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+          Profile
+        </a>
+        <form action="{% url 'store:logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="w-full text-left px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-300">
+            Logout
+          </button>
+        </form>
+      </div>
+      {% else %}
+      <div class="border-t border-gray-100 pt-2 mt-2 space-y-2">
+        <a href="{% url 'store:cart' %}" class="flex items-center justify-between px-4 py-3 text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors duration-300">
+          <span>Cart</span>
+          {% if cart_count > 0 %}<span class="bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-full">{{ cart_count }}</span>{% endif %}
+        </a>
+        <a href="{% url 'store:auth' %}" class="px-4 py-3 text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors duration-300 text-center block">
+          Sign In
+        </a>
+      </div>
+      {% endif %}
+    </nav>
+  </div>
+</div>
+
+<!-- ================= MESSAGES ================= -->
+{% if messages %}
+<div class="fixed top-24 right-4 z-50 space-y-2 max-w-sm">
+  {% for message in messages %}
+  <div class="toast flex items-center gap-3 p-4 rounded-xl shadow-lg border animate-slide-down {% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-800{% else %}bg-emerald-50 border-emerald-200 text-emerald-800{% endif %}">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {% if message.tags == 'error' %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      {% elif message.tags == 'warning' %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      {% else %}
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      {% endif %}
+    </svg>
+    <span class="text-sm font-medium">{{ message }}</span>
+    <button onclick="this.parentElement.remove()" class="ml-auto p-1 hover:bg-black/5 rounded-full transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- ================= MAIN ================= -->
-<main class="flex-1 pt-28 container mx-auto p-4">
+<main class="flex-1 pt-24 lg:pt-20 container mx-auto p-4 sm:p-6">
     {% block content %}{% endblock %}
 </main>
 
 <!-- ================= FOOTER ================= -->
-<footer class="bg-gray-900 text-white mt-auto pt-10 pb-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div>
-        <h3 class="text-xl font-bold mb-4">Teryaq Pharmacy</h3>
-        <p class="text-gray-400 mb-2">
-          نقدم أفضل الأدوية ومنتجات العناية بالصحة والجمال. هدفنا تقديم خدمة سريعة وموثوقة لجميع عملائنا.
+<footer class="bg-white border-t border-gray-100 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <img src="{% static 'store/images/finished-logo.png' %}" alt="Teryaq Pharmacy" class="h-8 w-auto">
+          <span class="text-lg font-bold text-gray-800">Teryaq Pharmacy</span>
+        </div>
+        <p class="text-gray-500 text-sm leading-relaxed max-w-md">
+          Your trusted healthcare partner. We provide quality medicines and health products with fast, reliable service.
         </p>
-        <p class="text-gray-400">Opening Hours: Sat - Thu, 8AM - 10PM</p>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Quick Links</h3>
-        <ul class="space-y-2">
-          <li><a href="#" class="hover:text-green-500 transition">Home</a></li>
-          <li><a href="#" class="hover:text-green-500 transition">Shop</a></li>
-          <li><a href="#" class="hover:text-green-500 transition">About Us</a></li>
-          <li><a href="#" class="hover:text-green-500 transition">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-xl font-bold mb-4">Contact Us</h3>
-        <ul class="space-y-2 text-gray-400">
-          <li> 123 Teryaq St, Cairo, Egypt</li>
-          <li>📞 +20 123 456 7890</li>
-          <li>✉️ info@teryaqpharmacy.com</li>
-          <li>🌐 www.teryaqpharmacy.com</li>
-        </ul>
-        <div class="flex space-x-4 mt-4">
-          <a href="#" class="hover:text-green-500 transition">Facebook</a>
-          <a href="#" class="hover:text-green-500 transition">Instagram</a>
-          <a href="#" class="hover:text-green-500 transition">Twitter</a>
+        <div class="flex space-x-4 mt-6">
+          <a href="#" class="text-gray-400 hover:text-emerald-600 transition-colors duration-300">
+            <span class="sr-only">Facebook</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v3.052h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-emerald-600 transition-colors duration-300">
+            <span class="sr-only">Instagram</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-emerald-600 transition-colors duration-300">
+            <span class="sr-only">Twitter</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+          </a>
         </div>
       </div>
+      
+      <div>
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4">Quick Links</h3>
+        <ul class="space-y-3">
+          <li><a href="{% url 'store:home' %}" class="text-gray-500 hover:text-emerald-600 transition-colors duration-300 text-sm">Home</a></li>
+          <li><a href="{% url 'store:medicine_list' %}" class="text-gray-500 hover:text-emerald-600 transition-colors duration-300 text-sm">Shop</a></li>
+          <li><a href="#" class="text-gray-500 hover:text-emerald-600 transition-colors duration-300 text-sm">About Us</a></li>
+          <li><a href="#" class="text-gray-500 hover:text-emerald-600 transition-colors duration-300 text-sm">Contact</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4">Contact</h3>
+        <ul class="space-y-3 text-gray-500 text-sm">
+          <li class="flex items-start gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>123 Teryaq St, Cairo, Egypt</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <span>+20 123 456 7890</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>info@teryaqpharmacy.com</span>
+          </li>
+        </ul>
+      </div>
     </div>
-    <br>
-    <div class="w-100 h-px bg-gray-500 mx-auto my-4"></div>
-    <div class="mt-8 text-sm text-center">
-      &copy; 2025 Teryaq Pharmacy. All rights reserved. Made with
-      <span class="text-red-500">&hearts;</span> by
-      <a href="https://www.linkedin.com/in/mohamed-ayman-812b46332" target="_blank" class="text-blue-500 underline hover:text-blue-700 transition">
-        Abo_AYMAN
-      </a>.
+    
+    <div class="border-t border-gray-100 mt-8 pt-8">
+      <p class="text-center text-sm text-gray-500">
+        &copy; 2025 Teryaq Pharmacy. All rights reserved. Made with
+        <span class="text-emerald-600">♥</span> by
+        <a href="https://www.linkedin.com/in/mohamed-ayman-812b46332" target="_blank" class="text-emerald-600 hover:text-emerald-700 transition-colors duration-300">
+          Abo_AYMAN
+        </a>.
+      </p>
     </div>
   </div>
 </footer>
@@ -158,40 +473,71 @@
 const input = document.getElementById('search-input');
 const resultsDiv = document.getElementById('search-results');
 
-input.addEventListener('input', function() {
-    const query = input.value.trim();
-    if (!query) {
-        resultsDiv.innerHTML = '';
-        resultsDiv.classList.add('hidden');
-        return;
-    }
-
-    fetch(`/ajax/search/?q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
-        .then(data => {
+if (input && resultsDiv) {
+    let debounceTimer;
+    
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = input.value.trim();
+        
+        if (!query) {
             resultsDiv.innerHTML = '';
-            if (data.results.length === 0) {
-                resultsDiv.innerHTML = `<p class="p-2 text-gray-500">لا توجد نتائج</p>`;
-            } else {
-                data.results.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "px-4 py-2 cursor-pointer hover:bg-[#d1b89b]";
-                    div.style.backgroundColor = "#F5E4D0"; // خلفية البوكس بني فاتح
-                    div.style.color = "black";
-                    div.textContent = `${item.name} - ${item.price} جنيه`;
-                    div.addEventListener('click', () => {
-                        window.location.href = `/medicine/${item.id}/`;
-                    });
-                    resultsDiv.appendChild(div);
+            resultsDiv.classList.add('hidden');
+            return;
+        }
+        
+        debounceTimer = setTimeout(function() {
+            fetch(`/ajax/search/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsDiv.innerHTML = '';
+                    if (data.results.length === 0) {
+                        resultsDiv.innerHTML = `<p class="p-4 text-gray-500 text-sm text-center">No results found</p>`;
+                    } else {
+                        data.results.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = "px-4 py-3 cursor-pointer hover:bg-emerald-50 transition-colors duration-200 flex items-center justify-between";
+                            div.innerHTML = `
+                                <span class="text-sm text-gray-800">${item.name}</span>
+                                <span class="text-sm font-semibold text-emerald-600">${item.price} EGP</span>
+                            `;
+                            div.addEventListener('click', () => {
+                                window.location.href = `/medicine/${item.id}/`;
+                            });
+                            resultsDiv.appendChild(div);
+                        });
+                    }
+                    resultsDiv.classList.remove('hidden');
+                })
+                .catch(function() {
+                    resultsDiv.innerHTML = '<p class="p-4 text-red-500 text-sm text-center">An error occurred</p>';
                 });
-            }
-            resultsDiv.classList.remove('hidden');
-        })
-        .catch(err => {
-            console.error(err);
-            resultsDiv.innerHTML = `<p class="p-2 text-red-500">حدث خطأ</p>`;
-        });
-});
+        }, 300);
+    });
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !resultsDiv.contains(e.target)) {
+            resultsDiv.classList.add('hidden');
+        }
+    });
+}
+
+// Mobile Menu Toggle
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const closeMenuBtn = document.getElementById('close-menu-btn');
+
+if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    });
+    closeMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        document.body.style.overflow = '';
+    });
+}
 </script>
 
 </body>
