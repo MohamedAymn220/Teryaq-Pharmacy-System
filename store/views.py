@@ -122,7 +122,7 @@ def home(request):
 
 @login_required(login_url='store:auth')
 def medicine_list(request):
-    """Paginated list of all medicines with category filtering."""
+    """List of all medicines with category filtering."""
     categories = Category.objects.all()
     medicines = Medicine.objects.all().select_related('category')
     
@@ -138,12 +138,8 @@ def medicine_list(request):
             Q(name__icontains=query) | Q(description__icontains=query)
         )
     
-    paginator = Paginator(medicines, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
     return render(request, 'store/medicine_list.html', {
-        'medicines': page_obj,
+        'medicines': medicines,
         'categories': categories,
         'current_category': category_id,
         'query': query,
