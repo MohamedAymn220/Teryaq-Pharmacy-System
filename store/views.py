@@ -6,11 +6,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum, Avg
 from django.db import transaction
 import json
 
-from .models import Medicine, Category, Order, OrderItem, Cart, CartItem
+from .models import Medicine, Category, Order, OrderItem, Cart, CartItem, Profile
 from .forms import CategoryForm, MedicineForm, CustomUserCreationForm
 
 
@@ -27,7 +27,7 @@ def auth_view(request):
     """Handle user authentication (login and signup)."""
     # Redirect authenticated users away from auth page
     if request.user.is_authenticated:
-        return redirect('store:home')
+        return redirect(settings.LOGIN_REDIRECT_URL)
 
     form = CustomUserCreationForm()
 
@@ -47,7 +47,7 @@ def auth_view(request):
                 if user is not None:
                     login(request, user)
                     messages.success(request, 'Welcome back, ' + username + '!')
-                    return redirect('store:home')
+                    return redirect(settings.LOGIN_REDIRECT_URL)
                 else:
                     messages.error(request, 'Invalid username or password. Please try again.')
 
@@ -81,7 +81,7 @@ def auth_view(request):
                     # Log the user in after signup
                     login(request, user)
                     messages.success(request, f'Welcome to Teryaq Pharmacy, {username}! Your account has been created.')
-                    return redirect('store:home')
+                    return redirect(settings.LOGIN_REDIRECT_URL)
                 except Exception as e:
                     messages.error(request, 'An error occurred during registration. Please try again.')
             else:
@@ -101,7 +101,7 @@ def auth_view(request):
 # =============================
 # PROTECTED PAGES
 # =============================
-@login_required(login_url='store:auth')
+
 def home(request):
     categories = Category.objects.all()
     medicines = Medicine.objects.all().select_related('category')
@@ -331,7 +331,7 @@ def order_success(request, order_id):
 @login_required(login_url='store:auth')
 def logout_view(request):
     logout(request)
-    return redirect('store:auth')
+    return redirect(settings.LOGOUT_REDIRECT_URL)
 
 
 # =============================
@@ -341,6 +341,10 @@ def logout_view(request):
 def dashboard(request):
     categories = Category.objects.annotate(medicine_count=Count('medicines'))
     medicines = Medicine.objects.select_related('category').all()
+    orders = Order.objects.select_related('user').order_by('-created_at')
+
+    in_stock = Medicine.objects.filter(stock__gt=0).count()
+    out_of_stock = Medicine.objects.filter(stock=0).count()
 
     category_form = None
     category_form_title = ''
@@ -358,6 +362,9 @@ def dashboard(request):
     return render(request, 'store/dashboard.html', {
         'categories': categories,
         'medicines': medicines,
+        'orders': orders,
+        'in_stock': in_stock,
+        'out_of_stock': out_of_stock,
         'category_form': category_form,
         'category_form_title': category_form_title,
         'medicine_form': medicine_form,
@@ -495,12 +502,21 @@ def search_medicines(request):
 @login_required(login_url='store:auth')
 def user_profile(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    total_orders = orders.count()
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    original_role = profile.role
+    profile.sync_role_from_user()
+    should_save = profile.role != original_role
+    if not profile.profile_picture:
+        profile.profile_picture = profile.avatar_url
+        should_save = True
+    if should_save:
+        profile.save()
 
     return render(request, 'store/profile.html', {
         'user': request.user,
-        'total_orders': total_orders,
-        'orders': orders
+        'profile': profile,
+        'order_count': orders.count(),
+        'orders': orders,
     })
 
 
@@ -515,6 +531,228 @@ def order_history(request):
         'orders': page_obj
     })
 
+# =============================
+# INCOME DASHBOARD
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Sum, Count
+from django.utils import timezone
+from datetime import timedelta
+
+def income_dashboard(request):
+    from store.models import Order, OrderItem
+    from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYear
+
+    period = request.GET.get('period', 'daily')
+    now = timezone.now()
+
+    delivered_qs = Order.objects.filter(status='delivered')
+    all_orders_qs = Order.objects.all()
+
+    stats = delivered_qs.aggregate(
+        total_revenue=Sum('total_price'),
+        delivered_count=Count('id'),
+    )
+
+    total_revenue = float(stats['total_revenue'] or 0)
+    total_orders = all_orders_qs.count()
+    delivered_orders = stats['delivered_count'] or 0
+    cancelled_orders = all_orders_qs.filter(status='cancelled').count()
+    pending_orders = all_orders_qs.filter(status='pending').count()
+
+    if period == 'daily':
+        since = now - timedelta(days=30)
+        trunc_fn = TruncDate
+    elif period == 'weekly':
+        since = now - timedelta(weeks=12)
+        trunc_fn = TruncWeek
+    elif period == 'monthly':
+        since = now - timedelta(days=365)
+        trunc_fn = TruncMonth
+    else:
+        since = now - timedelta(days=365 * 5)
+        trunc_fn = TruncDate
+
+    trend_data = list(
+        delivered_qs.filter(created_at__gte=since)
+        .annotate(period=trunc_fn('created_at'))
+        .values('period')
+        .annotate(revenue=Sum('total_price'), orders=Count('id'))
+        .order_by('period')
+    )
+
+    trend_labels = []
+    trend_revenue = []
+    trend_orders = []
+    for row in trend_data:
+        if hasattr(row['period'], 'strftime'):
+            trend_labels.append(row['period'].strftime('%Y-%m-%d'))
+        else:
+            trend_labels.append(str(row['period']))
+        trend_revenue.append(float(row['revenue'] or 0))
+        trend_orders.append(int(row['orders'] or 0))
+
+    trend = {
+        'labels': trend_labels,
+        'revenue': trend_revenue,
+        'orders': trend_orders
+    }
+
+    monthly_data_raw = list(
+        Order.objects.all()
+        .annotate(period=TruncMonth('created_at'))
+        .values('period')
+        .annotate(orders=Count('id'), revenue=Sum('total_price'))
+        .order_by('period')
+    )
+    monthly_labels = []
+    monthly_revenues = []
+    monthly_orders_list = []
+    for row in monthly_data_raw:
+        if hasattr(row['period'], 'strftime'):
+            monthly_labels.append(row['period'].strftime('%Y-%m-%d'))
+        else:
+            monthly_labels.append(str(row['period']))
+        monthly_revenues.append(float(row['revenue'] or 0))
+        monthly_orders_list.append(int(row['orders'] or 0))
+    monthly_data = {
+        'labels': monthly_labels,
+        'revenue': monthly_revenues,
+        'orders': monthly_orders_list
+    }
+
+    yearly_data_raw = list(
+        Order.objects.all()
+        .annotate(period=TruncYear('created_at'))
+        .values('period')
+        .annotate(orders=Count('id'), revenue=Sum('total_price'))
+        .order_by('period')
+    )
+    yearly_labels = []
+    yearly_revenues = []
+    yearly_orders_list = []
+    for row in yearly_data_raw:
+        if hasattr(row['period'], 'strftime'):
+            yearly_labels.append(row['period'].strftime('%Y-%m-%d'))
+        else:
+            yearly_labels.append(str(row['period']))
+        yearly_revenues.append(float(row['revenue'] or 0))
+        yearly_orders_list.append(int(row['orders'] or 0))
+    yearly_data = {
+        'labels': yearly_labels,
+        'revenue': yearly_revenues,
+        'orders': yearly_orders_list
+    }
+
+    daily_data_raw = list(
+        Order.objects.all()
+        .annotate(period=TruncDate('created_at'))
+        .values('period')
+        .annotate(orders=Count('id'), revenue=Sum('total_price'))
+        .order_by('period')
+    )
+    daily_labels = []
+    daily_revenues = []
+    daily_orders_list = []
+    for row in daily_data_raw:
+        if hasattr(row['period'], 'strftime'):
+            daily_labels.append(row['period'].strftime('%Y-%m-%d'))
+        else:
+            daily_labels.append(str(row['period']))
+        daily_revenues.append(float(row['revenue'] or 0))
+        daily_orders_list.append(int(row['orders'] or 0))
+    daily_data = {
+        'labels': daily_labels,
+        'revenue': daily_revenues,
+        'orders': daily_orders_list
+    }
+
+    weekly_data_raw = list(
+        Order.objects.all()
+        .annotate(period=TruncWeek('created_at'))
+        .values('period')
+        .annotate(orders=Count('id'), revenue=Sum('total_price'))
+        .order_by('period')
+    )
+    weekly_labels = []
+    weekly_revenues = []
+    weekly_orders_list = []
+    for row in weekly_data_raw:
+        if hasattr(row['period'], 'strftime'):
+            weekly_labels.append(row['period'].strftime('%Y-%m-%d'))
+        else:
+            weekly_labels.append(str(row['period']))
+        weekly_revenues.append(float(row['revenue'] or 0))
+        weekly_orders_list.append(int(row['orders'] or 0))
+    weekly_data = {
+        'labels': weekly_labels,
+        'revenue': weekly_revenues,
+        'orders': weekly_orders_list
+    }
+
+    top_meds_raw = list(
+        OrderItem.objects
+        .filter(order__status='delivered')
+        .values('medicine__name')
+        .annotate(
+            total_qty=Sum('quantity'),
+            total_revenue=Sum('quantity') * Sum('medicine__price')
+        )
+        .order_by('-total_qty')[:5]
+    )
+    top_meds = [
+        {'medicine__name': m['medicine__name'], 'total_qty': m['total_qty'], 'total_revenue': float(m['total_revenue'] or 0)}
+        for m in top_meds_raw
+    ]
+
+    cat_rev_raw = list(
+        OrderItem.objects
+        .filter(order__status='delivered')
+        .values('medicine__category__name')
+        .annotate(total_revenue=Sum('quantity') * Sum('medicine__price'))
+        .order_by('-total_revenue')
+    )
+    cat_rev = [
+        {'medicine__category__name': c['medicine__category__name'], 'total_revenue': float(c['total_revenue'] or 0)}
+        for c in cat_rev_raw
+    ]
+
+    status_dist = list(
+        all_orders_qs.values('status')
+        .annotate(count=Count('id'))
+        .order_by('status')
+    )
+
+    analytics_data = {
+        'total_revenue': total_revenue,
+        'total_orders': total_orders,
+        'delivered_orders': delivered_orders,
+        'cancelled_orders': cancelled_orders,
+        'pending_orders': pending_orders,
+        'period': period,
+        'trend': trend,
+        'daily': daily_data,
+        'weekly': weekly_data,
+        'monthly': monthly_data,
+        'yearly': yearly_data,
+        'top_meds': top_meds,
+        'cat_rev': cat_rev,
+        'status_dist': status_dist,
+        'has_delivered_orders': delivered_orders > 0,
+    }
+
+    serialized_data = {
+        'total_revenue': total_revenue,
+        'total_orders': total_orders,
+        'delivered_orders': delivered_orders,
+        'cancelled_orders': cancelled_orders,
+        'pending_orders': pending_orders,
+        'period': period,
+        'analytics_data_json': json.dumps(analytics_data, cls=DjangoJSONEncoder),
+    }
+
+    return render(request, 'store/income_dashboard.html', serialized_data)
+
 
 @login_required(login_url='store:auth')
 def order_detail(request, order_id):
@@ -522,6 +760,63 @@ def order_detail(request, order_id):
     return render(request, 'store/order_detail.html', {
         'order': order
     })
+
+
+@login_required(login_url='store:auth')
+def update_order_status(request, order_id):
+    if request.method != 'POST':
+        return redirect('store:dashboard')
+
+    if not request.user.is_staff:
+        messages.error(request, 'Permission denied.')
+        return redirect('store:dashboard')
+
+    new_status = request.POST.get('new_status')
+    if not new_status:
+        messages.error(request, 'No status provided.')
+        return redirect('store:dashboard')
+
+    # Map status abbreviations to full names for consistency
+    status_map = {
+        'confirm': 'confirmed',
+        'process': 'processing',
+        'ship': 'shipped',
+        'deliver': 'delivered',
+        'cancel': 'cancelled'
+    }
+    
+    if new_status not in status_map:
+        messages.error(request, 'Invalid status provided.')
+        return redirect('store:dashboard')
+        
+    full_status = status_map[new_status]
+
+    # Import the order services functions
+    from store.order_services import (
+        accept_order, reject_order, process_order, deliver_order, ship_order
+    )
+
+    action_map = {
+        'confirm': accept_order,
+        'process': process_order,
+        'ship': ship_order,
+        'deliver': deliver_order,
+        'cancel': reject_order,
+    }
+
+    handler = action_map.get(new_status)
+    if not handler:
+        messages.error(request, 'Invalid action.')
+        return redirect('store:dashboard')
+
+    success, message, order = handler(order_id)
+
+    if success:
+        messages.success(request, message)
+    else:
+        messages.error(request, message)
+
+    return redirect('store:dashboard')
 
 
 @login_required(login_url='store:auth')

@@ -43,4 +43,7 @@ urlpatterns = [
     # Auth
     path('auth/', views.auth_view, name='auth'),
     path('logout/', views.logout_view, name='logout'),
+    # Admin Dashboard
+    path('dashboard/income/', views.income_dashboard, name='income_dashboard'),
+    path('order/<int:order_id>/update-status/', views.update_order_status, name='update_order_status'),
 ]

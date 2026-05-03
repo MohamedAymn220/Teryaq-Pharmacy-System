@@ -1,347 +1,330 @@
-# 🏥 Teryaq-Pharmacy-System
+# 🏥 Teryaq Pharmacy (طرياق فارما)
 
-## 📌 Project Overview
+<div align="center">
 
-A **full-featured Pharmacy Management System** built using **Django**, designed and implemented with a **real-world software engineering mindset**. This project simulates an actual pharmacy workflow, focusing on scalability, clean architecture, and clear separation of concerns.
+![Django](https://img.shields.io/badge/Django-5.2+-092E1A?style=for-the-badge&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D2?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-This is **not a tutorial project** — it is a practical system suitable for portfolios, academic submission, and real deployment after minor extensions.
-
----
-
-## 🎯 Project Goals
-
-- Build a real e-commerce–like pharmacy system
-- Apply Django Authentication & Authorization correctly
-- Practice clean backend architecture
-- Deliver a responsive and user-friendly UI
-- Create a solid base for future expansion
+</div>
 
 ---
 
-## 👥 User Roles
+> ### 🌐 English | Arabic
 
-### 👤 Client (User)
+A full-featured online pharmacy management system built with Django 5.2 + Tailwind CSS. Manage medicines, categories, shopping cart, orders, and view detailed income analytics with interactive charts.
 
-- Register / Login
-- Browse medicines by category
-- View medicine details
-- Add medicines to cart
-- Update quantities in cart
-- Place orders
-
-### 🛠️ Admin (Dashboard)
-
-- Secure admin dashboard
-- Manage categories (CRUD)
-- Manage medicines (CRUD + images)
-- View and manage orders
-- Restricted access using authorization
+نظام إدارة صيدلية متكامل مبني باستخدام Django 5.2 + Tailwind CSS. إدارة الأدوية والفئات وسلة التسوق والطلبات مع رسوم بيانية تفاعلية.
 
 ---
 
-## 🔐 Authentication & Authorization
-
-| Concept        | Implementation                          |
-| -------------- | --------------------------------------- |
-| Authentication | Django Built-in Auth (Login / Register) |
-| Authorization  | `login_required`, staff checks          |
-| Cart Security  | Django Sessions                         |
-
-Only authorized users can access sensitive pages such as the dashboard.
-
----
-
-## 🛒 Cart System (Session-Based)
-
-- Cart stored using Django sessions
-- Each item stored as: `{medicine_id: quantity}`
-- Supports:
-  - Add to cart
-  - Increase / decrease quantity
-  - Remove item
-
-Efficient, simple, and scalable for small to medium systems.
-
----
-
-## 📦 Orders System
-
-- Each Order belongs to one User
-- Each Order contains multiple OrderItems
-- Total price calculated dynamically
-- Easily extendable to payment gateways
-
----
-
-## 🏗️ System Architecture
-
-![System Architecture](docs/images/architecture.png)
+## 📁 Project Structure | هيكل المشروع
 
 ```
-Client (Browser)
-     ↓ HTTP Requests
-Django Views (Controller Logic)
-     ↓
-Django Models (Business Logic)
-     ↓
-Database (SQLite → PostgreSQL Ready)
-```
-
-This architecture follows Django MVT with clear separation between presentation, logic, and data layers.
-
----
-
-## 📐 UML Diagrams
-
-### Client & Admin Use Case Diagram
-
-![Use Case Diagram](docs/images/usecase.png)
-
-### Class Diagram
-
-![Class Diagram](docs/images/class-diagram.png)
-
----
-
-## 📐 UML – Use Case Diagram (Textual)
-
-### Client Use Cases
-
-- Register / Login
-- Browse Medicines
-- Manage Cart
-- Place Order
-
-### Admin Use Cases
-
-- Login
-- Manage Medicines
-- Manage Categories
-- View Orders
-
----
-
-## 🧩 UML – Class Diagram (Core Models)
-
-- **Category**
-
-  - name
-  - image
-
-- **Medicine**
-
-  - name
-  - price
-  - image
-  - category
-
-- **Order**
-
-  - user
-  - created_at
-  - total_price
-
-- **OrderItem**
-  - order
-  - medicine
-  - quantity
-
----
-
-## 🧪 Engineering Principles Applied
-
-- Separation of Concerns
-- Reusability
-- Clean URLs
-- Secure Access Control
-- Scalable Structure
-
----
-
-## 🧰 Tech Stack
-
-- **Backend:** Django (Python)
-- **Frontend:** HTML, Tailwind CSS, JavaScript
-- **Database:** SQLite (development), PostgreSQL (production)
-- **Auth:** Django Authentication System with custom registration form
-- **Containerization:** Docker, Docker Compose
-- **Web Server:** Gunicorn, Nginx
-- **Caching:** Redis
-- **Version Control:** Git & GitHub
-
----
-
-## 📂 Project Structure
-
-```
-Teryaq-Pharmacy-System/
-│
-├── TeryaqPharma/              # Django Project Settings
-│   ├── settings.py            # Configuration (PostgreSQL, Redis, Security)
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-│
-├── store/                     # Main Application
-│   ├── migrations/
-│   ├── static/store/          # Static files (CSS, JS, Images)
-│   ├── templates/store/       # HTML Templates
-│   │   └── auth_complete.html # Sign In / Create Account page
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py               # CustomUserCreationForm with Pharmacy fields
-│   ├── models.py              # Category, Medicine, Order, OrderItem, Cart
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
-│
-├── docs/                      # Documentation & Configs
-│   ├── nginx.conf             # Nginx reverse proxy configuration
-│   └── db_init.sql            # PostgreSQL initialization script
-│
-├── media/                     # Uploaded media files
-│   ├── category_images/
-│   └── medicines/
-│
-├── .env.example               # Environment variables template
-├── .dockerignore              # Docker ignore rules
-├── Dockerfile                 # Multi-stage Docker build
-├── docker-compose.yml         # Full stack orchestration
-├── db.sqlite3                 # Development database
-├── manage.py
-├── README.md
-├── requirements.txt           # Python dependencies
-└── runtime.txt                # Python version specification
+TeryaqPharma/
+├── TeryaqPharma/              # Django project settings
+│   ├── __init__.py
+│   ├── settings.py           # Project configuration
+│   ├── urls.py               # Root URL configuration
+│   ├── wsgi.py              # WSGI entry point
+│   └── asgi.py              # ASGI entry point
+├── store/                    # Main application
+│   ├── models.py             # Database models
+│   ├── views.py             # View functions
+│   ├── urls.py              # App URLs
+│   ├── forms.py             # Django forms
+│   ├── admin.py            # Admin configuration
+│   ├── apps.py             # App configuration
+│   ├── tests.py            # Unit tests
+│   ├── context_processors.py
+│   ├── order_services.py   # Order business logic
+│   ├── dashboard_service.py # Analytics data service
+│   ├── dashboard_view.py  # Dashboard view
+│   ├── templates/store/    # HTML templates
+│   └── static/store/      # CSS/JS files
+├── docs/                   # Documentation
+│   ├── db_init.sql        # Database initialization
+│   └── nginx.conf         # Nginx config
+├── media/                  # User uploaded files
+│   ├── medicines/         # Product images
+│   └── category_images/   # Category images
+├── staticfiles/           # Collected static files
+├── requirements.txt     # Python dependencies
+├── manage.py           # Django management CLI
+├── seed_data.py        # Sample data seeder
+├── Dockerfile          # Docker configuration
+├── docker-compose.yml  # Docker Compose
+├── Procfile           # Heroku deployment
+├── runtime.txt        # Python runtime
+└── README.md         # This file
 ```
 
 ---
 
-## 🎓 Academic Value
+## 🗃️ Database Models | نماذج البيانات
 
-This project demonstrates:
+### Profile | الملف الشخصي
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| user | المستخدم | OneToOneField(User) | User account |
+| role | الدور | CharField | admin/user |
+| profile_picture | صورة الملف | URLField | Avatar URL |
+| created_at | تاريخ الإنشاء | DateTimeField | Creation date |
+| updated_at | تاريخ التحديث | DateTimeField | Last update |
 
-- Practical backend development
-- Correct use of MVC/MVT concepts
-- Secure web application design
-- Database relationships
+### Category | الفئة
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| name | الاسم | CharField(100) | Category name |
+| description | الوصف | TextField | Description |
+| image | الصورة | ImageField | Category image |
 
-Suitable for:
+### Medicine | الدواء
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| name | الاسم | CharField(100) | Medicine name |
+| description | الوصف | TextField | Description |
+| price | السعر | DecimalField | Price in EGP |
+| stock | المخزون | PositiveIntegerField | Available quantity |
+| category | الفئة | ForeignKey(Category) | Category |
+| image | الصورة | ImageField | Product image |
 
-- Faculty submission
-- Software Engineering courses
-- Django practical exams
+### Order | الطلب
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| user | المستخدم | ForeignKey(User) | Customer |
+| created_at | تاريخ الإنشاء | DateTimeField | Order date |
+| completed | مكتمل | BooleanField | Is completed |
+| status | الحالة | CharField | pending/confirmed/processing/shipped/delivered/cancelled |
+| total_price | السعر الإجمالي | DecimalField | Total price |
 
----
+### OrderItem | عنصر الطلب
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| order | الطلب | ForeignKey(Order) | Order |
+| medicine | الدواء | ForeignKey(Medicine) | Product |
+| quantity | الكمية | PositiveIntegerField | Quantity |
 
-## 🚀 Getting Started
+### Payment | الدفع
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| order | الطلب | ForeignKey(Order) | Order |
+| amount | المبلغ | DecimalField | Amount paid |
+| status | الحالة | CharField | Payment status |
+| payment_method | طريقة الدفع | CharField | Payment method |
+| created_at | تاريخ الدفع | DateTimeField | Payment date |
 
-### Prerequisites
+### Cart | السلة
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| user | المستخدم | OneToOneField(User) | Owner |
+| created_at | تاريخ الإنشاء | DateTimeField | Creation date |
+| updated_at | تاريخ التحديث | DateTimeField | Last update |
 
-- Python 3.11+
-- PostgreSQL 15+ (for production)
-- Docker & Docker Compose (for containerized deployment)
-
-### Local Development (Without Docker)
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd TeryaqPharma
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   # Windows
-   venv\Scripts\activate
-   # Linux/Mac
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your settings
-   ```
-
-5. **Run migrations**
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Create superuser**
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. **Start development server**
-   ```bash
-   python manage.py runserver
-   ```
-
-### Production Deployment (With Docker)
-
-1. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your production settings
-   ```
-
-2. **Build and start containers**
-   ```bash
-   docker-compose up -d --build
-   ```
-
-3. **Access the application**
-   - Web: http://localhost:8000
-   - Admin: http://localhost:8000/admin/
-
-4. **Stop containers**
-   ```bash
-   docker-compose down
-   ```
-
-### Key Features
-
-- **Custom Registration Form**: Includes Pharmacy Name and Phone fields
-- **PostgreSQL Support**: Production-ready database configuration
-- **Redis Caching**: Improved performance with Redis cache
-- **Nginx Reverse Proxy**: Static file serving and rate limiting
-- **Security Headers**: CSP, HSTS, X-Frame-Options configured
-
-## 🚀 Future Enhancements
-
-- Online Payment Integration
-- Order Status Tracking
-- REST API (DRF)
-- Mobile App Support
-- Advanced User Profiles with pharmacy-specific data
-- Email verification for new accounts
-- Password reset functionality
+### CartItem | عنصر السلة
+| Field | الحقل | Type | الوصف |
+|-------|-------|------|-------|
+| cart | السلة | ForeignKey(Cart) | Cart |
+| medicine | الدواء | ForeignKey(Medicine) | Product |
+| quantity | الكمية | PositiveIntegerField | Quantity |
+| added_at | تاريخ الإضافة | DateTimeField | Addition date |
 
 ---
 
-## 👨‍💻 Developer Statement
+## 📋 URL Routes | روابط الموقع
 
-> This project reflects my mindset as a Computer Engineering student who believes that **real learning happens when software solves real problems**. Every feature was implemented intentionally — not copied — and designed to be clean, scalable, and production-ready.
+| URL | View | الوصف |
+|-----|------|-------|
+| `/` | `home` | Home page - الرئيسية |
+| `/medicines/` | `medicine_list` | All medicines - جميع الأدوية |
+| `/medicine/<id>/` | `medicine_detail` | Medicine details - تفاصيل الدواء |
+| `/category/<id>/` | `category_detail` | Category detail - تفاصيل الفئة |
+| `/category/<id>/medicines/` | `medicines_by_category` | Medicines in category - أدوية الفئة |
+| `/search/` | `search_medicines` | Search results - نتائج البحث |
+| `/profile/` | `user_profile` | User profile - الملف الشخصي |
+| `/orders/` | `order_history` | Order history - سجل الطلبات |
+| `/orders/<id>/` | `order_detail` | Order details - تفاصيل الطلب |
+| `/dashboard/` | `dashboard` | Admin dashboard - لوحة الإدارة |
+| `/dashboard/income/` | `income_dashboard` | Income analytics - تحليل الإيرادات |
+| `/category/add/` | `category_add` | Add category - إضافة فئة |
+| `/category/edit/<id>/` | `category_edit` | Edit category - تعديل فئة |
+| `/category/delete/<id>/` | `category_delete` | Delete category - حذف فئة |
+| `/medicine/add/` | `medicine_add` | Add medicine - إضافة دواء |
+| `/medicine/edit/<id>/` | `medicine_edit` | Edit medicine - تعديل دواء |
+| `/medicine/delete/<id>/` | `medicine_delete` | Delete medicine - حذف دواء |
+| `/cart/` | `cart_view` | Shopping cart - سلة التسوق |
+| `/cart/add/<id>/` | `add_to_cart` | Add to cart - إضافة للسلة |
+| `/cart/update/<id>/` | `update_cart_quantity` | Update quantity - تحديث الكمية |
+| `/cart/remove/<id>/` | `remove_from_cart` | Remove from cart - حذف من الس��ة |
+| `/checkout/` | `checkout` | Checkout - الدفع |
+| `/order-success/<id>/` | `order_success` | Order success - نجاح الطلب |
+| `/order/<id>/update-status/` | `update_order_status` | Update status - تحديث الحالة |
+| `/ajax/search/` | `ajax_search` | AJAX search - بحث فوري |
+| `/auth/` | `auth_view` | Login/Register - تسجيل الدخول |
+| `/logout/` | `logout_view` | Logout - تسجيل الخروج |
 
 ---
 
-## 👨‍💻 Developer
+## ✨ Features | المميزات
 
-**Mohamed Ayman**  
-Computer Engineering – Systems & Computers  
-Focused on building scalable, real-world systems using Django and modern web technologies.
+| Feature | الوصف |
+|---------|-------|
+| 🔐 **User Authentication** | تسجيل الدخول/التسجيل مع دورات مخصصة |
+| 💊 **Medicine Catalog** | كتالوج الأدوية مع تصفية حسب الفئة |
+| 🏷️ **Categories** | فئات المنتجات مع صور |
+| 🛒 **Shopping Cart** | نظام سلة تسوق متكامل |
+| 📦 **Order Management** | إدارة الطلبات مع تتبع الحالة |
+| 📊 **Admin Dashboard** | لوحة تحكم_ADMIN مع عمليات CRUD |
+| 📈 **Income Analytics** | تحليل الإيرادات مع Chart.js |
+| 🔍 **Live Search** | بحث AJAX فوري |
+| 📱 **Responsive Design** | تصميم متجاوب مع Tailwind CSS |
+| 🎨 **Modern UI** | واجهة مستخدم عصرية وأنيقة |
 
 ---
 
-## ✅ Final Notes
+## 🛠️ Tech Stack | التقنيات
 
-This system is not the end — it is a **strong foundation**.
+| Category | Technology | الإصدار |
+|----------|-------------|---------|
+| **Backend** | Django | 5.2+ |
+| **Backend** | Python | 3.13 |
+| **Frontend** | Tailwind CSS | 3.4 |
+| **Frontend** | Chart.js | 4.4 |
+| **Frontend** | Vanilla JS | ES6+ |
+| **Database** | SQLite | 3 |
+| **Image Processing** | Pillow | 10+ |
+| **Static Files** | Whitenoise | 6+ |
+| **Authentication** | Django Auth | Built-in |
 
-Built to grow. Built to matter.
+---
+
+## 🚀 Installation & Setup | التثبيت والتشغيل
+
+### 1. Clone the Repository | استنساخ المشروع
+
+```bash
+git clone https://github.com/abdelrahman-ahmed-nassar/TeryaqPharma.git
+cd TeryaqPharma
+```
+
+### 2. Create Virtual Environment | إنشاء بيئة افتراضية
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies | تثبيت المتطلبات
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run Migrations | تشغيل الترحيلات
+
+```bash
+python manage.py migrate
+```
+
+### 5. Create Superuser | إنشاء مدير système
+
+```bash
+python manage.py createsuperuser
+# Follow prompts to create admin account
+```
+
+### 6. (Optional) Load Seed Data | (اختياري) تحميل بيانات تجريبية
+
+```bash
+python manage.py shell < seed_data.py
+# Or run the seeder function
+```
+
+### 7. Run Server | تشغيل السيرفر
+
+```bash
+python manage.py runserver
+```
+
+### 8. Access the Application | الوصول للتطبيق
+
+| URL | الوصف |
+|-----|-------|
+| http://127.0.0.1:8000/ | Main store |
+| http://127.0.0.1:8000/dashboard/ | Admin dashboard |
+| http://127.0.0.1:8000/auth/ | Login/Register |
+
+---
+
+## ⚙️ Environment Variables | متغيرات البيئة
+
+Create a `.env` file in the project root:
+
+```env
+# Django Settings
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+# Database (optional - uses SQLite by default)
+DATABASE_NAME=db.sqlite3
+
+# Media Files
+MEDIA_URL=/media/
+MEDIA_ROOT=BASE_DIR / 'media'
+
+# Static Files
+STATIC_URL=/static/
+STATIC_ROOT=BASE_DIR / 'staticfiles'
+```
+
+---
+
+## 📸 Screenshots | لقطات الشاشة
+
+> ### Add your screenshots here | أضف لقطات الشاشة هنا
+
+| Page | الصفحة |
+|------|---------|
+| Home | الرئيسية |
+| Medicine List | قائمة الأدوية |
+| Cart | السلة |
+| Dashboard | لوحة التحكم |
+| Income Analytics | تحليل الإيراد��ت |
+
+---
+
+## 📄 License | الترخيص
+
+<div align="center">
+
+**MIT License** - Feel free to use, modify, and distribute.
+
+</div>
+
+---
+
+## 👤 Author | المؤلف
+
+<div align="center">
+
+**Mohamed Ayman AbdelFatah**
+
+[![GitHub](https://img.shields.io/badge/GitHub-abdelrahman--ahmed--nassar-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abdelrahman-ahmed-nassar)
+[![Email](https://img.shields.io/badge/Email-mohamedayman_@outlook.com-D14836?style=for-the-badge&logo=microsoft-outlook&logoColor=white)](mailto:mohamedayman_@outlook.com)
+
+</div>
+
+---
+
+<div align="center">
+
+**Made with ❤️ in Egypt**
+
+</div>

@@ -1,6 +1,57 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from urllib.parse import quote_plus
+
+
+def build_avatar_url(name):
+    """Generate a neutral CDN avatar based on a user's display name."""
+    safe_name = quote_plus(name or 'Teryaq User')
+    return (
+        'https://ui-avatars.com/api/'
+        f'?name={safe_name}&background=E2E8F0&color=475569&size=256&rounded=true&bold=true'
+    )
+
+
+class Profile(models.Model):
+    ROLE_ADMIN = 'admin'
+    ROLE_USER = 'user'
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, 'Admin'),
+        (ROLE_USER, 'User'),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ROLE_USER)
+    profile_picture = models.URLField(max_length=500, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"
+
+    @property
+    def display_name(self):
+        return self.user.get_full_name().strip() or self.user.username
+
+    @property
+    def avatar_url(self):
+        return self.profile_picture or build_avatar_url(self.display_name)
+
+    def sync_role_from_user(self):
+        self.role = self.ROLE_ADMIN if (self.user.is_staff or self.user.is_superuser) else self.ROLE_USER
+
+    def save(self, *args, **kwargs):
+        self.sync_role_from_user()
+        if not self.profile_picture:
+            self.profile_picture = build_avatar_url(self.display_name)
+        super().save(*args, **kwargs)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -95,3 +146,21 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity}x {self.medicine.name}"
+
+
+@receiver(post_save, sender=User)
+def create_or_sync_user_profile(sender, instance, created, **kwargs):
+    profile, profile_created = Profile.objects.get_or_create(user=instance)
+
+    needs_update = False
+    synced_role = Profile.ROLE_ADMIN if (instance.is_staff or instance.is_superuser) else Profile.ROLE_USER
+    if profile.role != synced_role:
+        profile.role = synced_role
+        needs_update = True
+
+    if not profile.profile_picture:
+        profile.profile_picture = build_avatar_url(profile.display_name)
+        needs_update = True
+
+    if created or profile_created or needs_update:
+        profile.save()

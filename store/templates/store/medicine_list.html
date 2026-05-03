@@ -30,6 +30,8 @@
         {% endfor %}
     </div>
 </div>
+
+{% if request.user.is_authenticated and request.user.is_staff %}
 <a href="{% url 'store:dashboard' %}"
    class="inline-flex items-center gap-2 px-6 py-3 
           bg-gradient-to-r from-green-600 to-green-700 
@@ -38,7 +40,6 @@
           hover:from-green-700 hover:to-green-800
           transition-all duration-300">
 
-    <!-- Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -54,7 +55,6 @@
           transition-all duration-300"
    style="background-color: #0088BF; hover:bg-color: #006f99;">
 
-    <!-- Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,6 +63,7 @@
 
     Admin Panel
 </a>
+{% endif %}
 
 
 

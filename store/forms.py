@@ -2,12 +2,18 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from .models import Category, Medicine
+
+egyptian_phone_regex = RegexValidator(
+    regex=r'^01[0125][0-9]{8}$',
+    message="Phone number must be 11 digits and start with 010, 011, 012, or 015."
+)
 
 
 class CustomUserCreationForm(UserCreationForm):
     """Custom registration form with additional fields for pharmacy registration."""
-    
+
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
@@ -15,7 +21,7 @@ class CustomUserCreationForm(UserCreationForm):
             'placeholder': 'Email'
         })
     )
-    
+
     pharmacy_name = forms.CharField(
         max_length=200,
         required=True,
@@ -24,13 +30,18 @@ class CustomUserCreationForm(UserCreationForm):
             'placeholder': 'Pharmacy Name'
         })
     )
-    
+
     phone = forms.CharField(
-        max_length=20,
+        max_length=11,
         required=True,
+        validators=[egyptian_phone_regex],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Phone Number'
+            'placeholder': 'Egyptian Phone (e.g., 01012345678)',
+            'pattern': r'^01[0125][0-9]{8}$',
+            'maxlength': '11',
+            'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);",
+            'oninvalid': "this.setCustomValidity('Please enter a valid Egyptian phone number (e.g., 010...)')"
         })
     )
 
@@ -53,6 +64,16 @@ class CustomUserCreationForm(UserCreationForm):
             'class': 'form-control',
             'placeholder': 'Confirm Password'
         })
+
+    def clean_phone_number(self):
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            import re
+            if not re.match(r'^01[0125][0-9]{8}$', phone):
+                raise forms.ValidationError(
+                    "Phone number must be 11 digits and start with 010, 011, 012, or 015."
+                )
+        return phone
 
 
 class CategoryForm(forms.ModelForm):

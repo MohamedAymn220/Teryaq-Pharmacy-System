@@ -1,0 +1,980 @@
+{% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Income Analytics — Teryaq Pharmacy{% endblock %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --em: #059669;
+    --em-d: #047857;
+    --em-50: #ecfdf5;
+    --em-100: #d1fae5;
+    --bl: #2563eb;
+    --bl-l: #dbeafe;
+    --am: #d97706;
+    --am-l: #fef3c7;
+    --rd: #dc2626;
+    --rd-l: #fee2e2;
+    --pu: #7c3aed;
+    --pu-l: #f3e8ff;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .inc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .inc-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-left: 16px;
+    border-left: 4px solid var(--em);
+  }
+
+  .inc-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--em-100);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .inc-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+  }
+
+  .inc-sub {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  .btn-analytics {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #059669;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn-analytics:hover {
+    background: #047857;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+  }
+
+  .time-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .scard {
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+  }
+
+  .scard-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .scard-ico {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .scard-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+
+  .scard-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+
+  .scard-value {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .scard-sub {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+  }
+
+  .c-em .scard-ico { background: var(--em-100); }
+  .c-em .scard-value { color: var(--em-d); }
+  .c-em .scard-badge { background: var(--em-100); color: var(--em-d); }
+
+  .c-bl .scard-ico { background: var(--bl-l); }
+  .c-bl .scard-value { color: var(--bl); }
+  .c-bl .scard-badge { background: var(--bl-l); color: var(--bl); }
+
+  .c-am .scard-ico { background: var(--am-l); }
+  .c-am .scard-value { color: var(--am); }
+  .c-am .scard-badge { background: var(--am-l); color: var(--am); }
+
+  .c-rd .scard-ico { background: var(--rd-l); }
+  .c-rd .scard-value { color: var(--rd); }
+  .c-rd .scard-badge { background: var(--rd-l); color: var(--rd); }
+
+  .c-pu .scard-ico { background: var(--pu-l); }
+  .c-pu .scard-value { color: var(--pu); }
+  .c-pu .scard-badge { background: var(--pu-l); color: var(--pu); }
+
+  .chart-card {
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .chart-card:hover {
+    box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+  }
+
+  .chart-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .chart-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .tabs {
+    display: flex;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .tbtn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #6b7280;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tbtn.active {
+    background: #059669;
+    color: white;
+    box-shadow: 0 4px 12px rgba(5,150,105,0.35);
+  }
+
+  .tbtn:hover:not(.active) {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  .tbl-wrap {
+    overflow-x: auto;
+  }
+
+  .inc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .inc-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #6b7280;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .inc-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+
+  .inc-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .inc-table tbody tr {
+    transition: background 0.2s;
+  }
+
+  .inc-table tbody tr:hover td {
+    background: #ecfdf5;
+  }
+
+  .rnk {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .r1 { background: #fef9c3; color: #854d0e; }
+  .r2 { background: #f1f5f9; color: #475569; }
+  .r3 { background: #ffedd5; color: #9a3412; }
+  .rn { background: #f3f4f6; color: #6b7280; }
+
+  .pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .pill-bl { background: #dbeafe; color: #2563eb; }
+  .pill-em { background: #d1fae5; color: #047857; }
+
+  .empty-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.92);
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    z-index: 10;
+    border-radius: 20px;
+  }
+
+  @media (max-width: 1280px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; gap: 16px; }
+    .inc-title { font-size: 22px; }
+    .scard-value { font-size: 26px; }
+  }
+</style>
+
+<div class="max-w-[1600px] mx-auto p-8 bg-slate-50 min-h-screen">
+  <div class="inc-header">
+    <div class="inc-title-wrap">
+      <div class="inc-icon">📊</div>
+      <div>
+        <div class="inc-title">Income Analytics</div>
+        <div class="inc-sub">تحليل كامل لإيرادات ومبيعات الصيدلية — كل الفترات</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div class="time-chip">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span id="clock">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script id="analytics-data" type="application/json">{{ analytics_data_json|safe }}</script>
+
+  <div class="grid grid-cols-12 gap-8 mb-10">
+    <div class="col-span-12">
+      <h2 class="text-2xl font-black text-slate-800 border-l-8 border-emerald-500 pl-4 py-2 mb-8">
+        📌 ملخص عام
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="scard c-em">
+          <div class="scard-top">
+            <div class="scard-ico">💰</div>
+            <span class="scard-badge">Delivered</span>
+          </div>
+          <div class="scard-label">TOTAL REVENUE</div>
+          <div class="scard-value">{{ total_revenue|default:"0" }}</div>
+          <div class="scard-sub">جنيه مصري</div>
+        </div>
+
+        <div class="scard c-bl">
+          <div class="scard-top">
+            <div class="scard-ico">📦</div>
+            <span class="scard-badge">All</span>
+          </div>
+          <div class="scard-label">TOTAL ORDERS</div>
+          <div class="scard-value">{{ total_orders|default:"0" }}</div>
+          <div class="scard-sub">كل حالات الأوردرات</div>
+        </div>
+
+        <div class="scard c-am">
+          <div class="scard-top">
+            <div class="scard-ico">✅</div>
+            <span class="scard-badge">Done</span>
+          </div>
+          <div class="scard-label">DELIVERED</div>
+          <div class="scard-value">{{ delivered_orders|default:"0" }}</div>
+          <div class="scard-sub">تم التسليم بنجاح</div>
+        </div>
+
+        <div class="scard c-rd">
+          <div class="scard-top">
+            <div class="scard-ico">❌</div>
+            <span class="scard-badge">Lost</span>
+          </div>
+          <div class="scard-label">CANCELLED</div>
+          <div class="scard-value">{{ cancelled_orders|default:"0" }}</div>
+          <div class="scard-sub">أوردرات ملغاة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-8 mb-10">
+    <div class="col-span-12">
+      <h2 class="text-2xl font-black text-slate-800 border-l-8 border-emerald-500 pl-4 py-2 mb-8">
+        📈 المبيعات عبر الزمن
+      </h2>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 chart-card">
+          <div class="chart-title">
+            <div class="chart-dot" style="background: #059669;"></div>
+            Sales Over Time
+          </div>
+          <div class="tabs mb-4">
+            <button class="tbtn active" data-period="daily" onclick="switchPeriod('daily', this)">Daily</button>
+            <button class="tbtn" data-period="weekly" onclick="switchPeriod('weekly', this)">Weekly</button>
+            <button class="tbtn" data-period="monthly" onclick="switchPeriod('monthly', this)">Monthly</button>
+            <button class="tbtn" data-period="yearly" onclick="switchPeriod('yearly', this)">Yearly</button>
+          </div>
+          <div class="relative h-[350px] w-full">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 chart-card">
+          <div class="chart-title">
+            <div class="chart-dot" style="background: #2563eb;"></div>
+            Order Status
+          </div>
+          <div class="relative h-[350px] w-full">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-8 mb-10">
+    <div class="col-span-12">
+      <h2 class="text-2xl font-black text-slate-800 border-l-8 border-emerald-500 pl-4 py-2 mb-8">
+        💊 تفاصيل المنتجات والفئات
+      </h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="chart-card">
+          <div class="chart-title">
+            <div class="chart-dot" style="background: #d97706;"></div>
+            Top Medicines
+          </div>
+          <div class="relative h-[350px] w-full">
+            <canvas id="topMedChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">
+            <div class="chart-dot" style="background: #7c3aed;"></div>
+            Revenue by Category
+          </div>
+          <div class="relative h-[350px] w-full" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:380px;">
+            <canvas id="catChart" style="height:340px;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-8 mb-10">
+    <div class="col-span-12">
+      <h2 class="text-2xl font-black text-slate-800 border-l-8 border-emerald-500 pl-4 py-2 mb-8">
+        📊 عدد الأوردرات الشهري
+      </h2>
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="chart-dot" style="background: #2563eb;"></div>
+          Monthly Orders Count
+        </div>
+        <div class="relative h-[350px] w-full">
+          <canvas id="ordersChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-8 mb-10">
+    <div class="col-span-12">
+      <h2 class="text-2xl font-black text-slate-800 border-l-8 border-emerald-500 pl-4 py-2 mb-8">
+        🏆 أكثر الأدوية مبيعاً — تفصيلي
+      </h2>
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="chart-dot" style="background: #059669;"></div>
+          Medicine Sales Details
+        </div>
+        <div class="tbl-wrap rounded-xl overflow-hidden">
+          <table class="inc-table">
+            <thead class="bg-slate-50">
+              <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Qty Sold</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody id="medTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var analyticsData;
+  try {
+    var rawData = document.getElementById('analytics-data').textContent;
+    analyticsData = JSON.parse(rawData);
+  } catch (e) {
+    console.error('JSON parse error:', e);
+    analyticsData = {
+      total_revenue: 0,
+      total_orders: 0,
+      delivered_orders: 0,
+      cancelled_orders: 0,
+      trend: { labels: [], revenue: [], orders: [] },
+      daily: { labels: [], revenue: [], orders: [] },
+      weekly: { labels: [], revenue: [], orders: [] },
+      monthly: { labels: [], revenue: [], orders: [] },
+      yearly: { labels: [], revenue: [], orders: [] },
+      top_meds: [],
+      cat_rev: [],
+      status_dist: []
+    };
+  }
+
+  var currentPeriod = analyticsData.period || 'daily';
+
+  var DATA = {
+    daily: analyticsData.daily || { labels: [], revenue: [], orders: [] },
+    weekly: analyticsData.weekly || { labels: [], revenue: [], orders: [] },
+    monthly: analyticsData.monthly || { labels: [], revenue: [], orders: [] },
+    yearly: analyticsData.yearly || { labels: [], revenue: [], orders: [] },
+    trend: analyticsData.trend || { labels: [], revenue: [], orders: [] },
+  };
+
+  var TOP_MEDS = Array.isArray(analyticsData.top_meds) ? analyticsData.top_meds : [];
+  var CAT_REV = Array.isArray(analyticsData.cat_rev) ? analyticsData.cat_rev : [];
+  var STATUS_DIST = Array.isArray(analyticsData.status_dist) ? analyticsData.status_dist : [];
+
+  function getArrayOrEmpty(arr) {
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  var MED_NAMES = getArrayOrEmpty(TOP_MEDS).map(function(m) {
+    return m.medicine__name || m.medicine_name || '';
+  });
+  var MED_QTY = getArrayOrEmpty(TOP_MEDS).map(function(m) {
+    return parseInt(m.total_qty) || 0;
+  });
+  var MED_REV = getArrayOrEmpty(TOP_MEDS).map(function(m) {
+    return parseFloat(m.total_revenue) || 0;
+  });
+
+  var CAT_NAMES = getArrayOrEmpty(CAT_REV).map(function(c) {
+    return c.medicine__category__name || c.category_name || '';
+  });
+  var CAT_REV_VAL = getArrayOrEmpty(CAT_REV).map(function(c) {
+    var v = parseFloat(c.total_revenue) || 0;
+    return v === 0 ? 0.001 : v;
+  });
+
+  var POL_COLORS = ['#059669','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2','#16a34a','#db2777','#f59e0b','#6366f1'];
+
+  var ST_LABELS = getArrayOrEmpty(STATUS_DIST).map(function(s) {
+    var status = s.status || '';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  });
+  var ST_DATA = getArrayOrEmpty(STATUS_DIST).map(function(s) {
+    return parseInt(s.count) || 0;
+  });
+
+  Chart.defaults.font.family = 'Inter, sans-serif';
+  Chart.defaults.color = '#475569';
+
+  var PAL = ['#059669', '#2563eb', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#16a34a', '#db2777'];
+
+  var TT = {
+    backgroundColor: '#ffffff',
+    borderColor: '#e5e7eb',
+    borderWidth: 1,
+    titleColor: '#111827',
+    bodyColor: '#374151',
+    padding: 14,
+    cornerRadius: 12,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+  };
+
+  function createEmeraldGradient(ctx, color1, color2) {
+    var gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+  }
+
+  function addEmptyOverlay(canvasId, message) {
+    var container = document.getElementById(canvasId).parentElement;
+    var existing = container.querySelector('.empty-overlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.className = 'empty-overlay';
+    overlay.textContent = message;
+    container.appendChild(overlay);
+  }
+
+  function removeEmptyOverlay(canvasId) {
+    var container = document.getElementById(canvasId).parentElement;
+    var overlay = container.querySelector('.empty-overlay');
+    if (overlay) overlay.remove();
+  }
+
+  var mainChart;
+  function buildMainChart(period) {
+    var d = DATA[period] || DATA.trend;
+    var hasData = d && d.labels && d.labels.length > 0;
+
+    if (!hasData) {
+      var ctx = document.getElementById('mainChart').getContext('2d');
+      if (mainChart) mainChart.destroy();
+      mainChart = new Chart(document.getElementById('mainChart'), {
+        type: 'line',
+        data: {
+          labels: ['No Data'],
+          datasets: [{
+            label: 'Revenue (EGP)',
+            data: [0],
+            borderColor: '#059669',
+            backgroundColor: 'rgba(5,150,105,0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: TT },
+          scales: {
+            x: { grid: { display: false }, ticks: { display: false } },
+            y: { grid: { display: false }, ticks: { display: false } },
+          },
+        },
+      });
+      addEmptyOverlay('mainChart', 'No transactions recorded yet');
+      return;
+    } else {
+      removeEmptyOverlay('mainChart');
+    }
+
+    var ctx = document.getElementById('mainChart').getContext('2d');
+    var gradientFill = createEmeraldGradient(ctx, 'rgba(5,150,105,0.5)', 'rgba(5,150,105,0.02)');
+
+    if (mainChart) mainChart.destroy();
+    mainChart = new Chart(document.getElementById('mainChart'), {
+      type: 'line',
+      data: {
+        labels: d.labels,
+        datasets: [
+          {
+            label: 'Revenue (EGP)',
+            data: d.revenue,
+            borderColor: '#059669',
+            backgroundColor: gradientFill,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#059669',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: d.labels.length > 25 ? 0 : 6,
+            yAxisID: 'yR',
+          },
+          {
+            label: 'Orders',
+            data: d.orders,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.05)',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointBackgroundColor: '#2563eb',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: d.labels.length > 25 ? 0 : 4,
+            yAxisID: 'yO',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#374151', font: { size: 13, weight: '600' }, padding: 20 } },
+          tooltip: TT,
+        },
+        scales: {
+          x: { grid: { color: '#f1f5f9' }, ticks: { maxTicksLimit: 12, color: '#94a3b8' } },
+          yR: {
+            position: 'left',
+            grid: { color: '#f1f5f9' },
+            ticks: { callback: function(v) { return v.toLocaleString() + ' EGP'; }, color: '#059669' },
+          },
+          yO: {
+            position: 'right',
+            grid: { display: false },
+            ticks: { color: '#2563eb' },
+          },
+        },
+      },
+    });
+  }
+
+  window.switchPeriod = function(period, btn) {
+    document.querySelectorAll('.tbtn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    var url = new URL(window.location.href);
+    url.searchParams.set('period', period);
+    window.location.href = url.toString();
+  };
+
+  buildMainChart(currentPeriod);
+
+  document.querySelectorAll('.tbtn').forEach(function(btn) {
+    if (btn.dataset.period === currentPeriod) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  if (ST_LABELS.length === 0 || ST_DATA.every(function(d) { return d === 0; })) {
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['No Data'],
+        datasets: [{ data: [1], backgroundColor: ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 4 }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      },
+    });
+    addEmptyOverlay('statusChart', 'No transactions recorded yet');
+  } else {
+    removeEmptyOverlay('statusChart');
+    var SC = {
+      Pending: '#d97706', Confirmed: '#2563eb', Processing: '#7c3aed',
+      Shipped: '#0891b2', Delivered: '#059669', Cancelled: '#dc2626',
+    };
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ST_LABELS,
+        datasets: [{
+          data: ST_DATA,
+          backgroundColor: ST_LABELS.map(function(l) { return SC[l] || '#94a3b8'; }),
+          borderColor: '#ffffff',
+          borderWidth: 4,
+          hoverOffset: 10,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#374151', padding: 16, font: { size: 12, weight: '600' } },
+          },
+          tooltip: TT,
+        },
+      },
+    });
+  }
+
+  if (MED_NAMES.length === 0 || MED_QTY.every(function(q) { return q === 0; })) {
+    new Chart(document.getElementById('topMedChart'), {
+      type: 'bar',
+      data: {
+        labels: ['No Data'],
+        datasets: [{ data: [0], backgroundColor: '#e2e8f0', borderColor: '#94a3b8', borderWidth: 1, borderRadius: 8 }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false } },
+      },
+    });
+    addEmptyOverlay('topMedChart', 'No transactions recorded yet');
+  } else {
+    removeEmptyOverlay('topMedChart');
+    new Chart(document.getElementById('topMedChart'), {
+      type: 'bar',
+      data: {
+        labels: MED_NAMES,
+        datasets: [{
+          label: 'Qty Sold',
+          data: MED_QTY,
+          backgroundColor: MED_NAMES.map(function(_, i) { return PAL[i % PAL.length] + '33'; }),
+          borderColor: MED_NAMES.map(function(_, i) { return PAL[i % PAL.length]; }),
+          borderWidth: 2,
+          borderRadius: 8,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: TT },
+        scales: {
+          x: { grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { color: '#94a3b8' } },
+          y: { grid: { display: false }, ticks: { color: '#374151', font: { weight: '600' } } },
+        },
+      },
+    });
+  }
+
+  if (CAT_NAMES.length === 0 || CAT_REV_VAL.every(function(r) { return r === 0; })) {
+    new Chart(document.getElementById('catChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['No Data'],
+        datasets: [{ data: [1], backgroundColor: ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 4 }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      },
+    });
+    addEmptyOverlay('catChart', 'No transactions recorded yet');
+  } else {
+    removeEmptyOverlay('catChart');
+    var catColors = ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#ec4899','#f97316','#6366f1'];
+    new Chart(document.getElementById('catChart'), {
+      type: 'doughnut',
+      data: {
+        labels: CAT_NAMES,
+        datasets: [{
+          data: getArrayOrEmpty(CAT_REV).map(function(c) { return parseFloat(c.total_revenue) || 0; }),
+          backgroundColor: catColors,
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 16,
+          offset: 4,
+          spacing: 3,
+        }],
+      },
+      options: {
+        cutout: '58%',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { 
+              color: '#374151', 
+              font: { size: 13, weight: '600' },
+              boxWidth: 16,
+              boxHeight: 16,
+              padding: 16,
+              generateLabels: function(chart) {
+                var data = chart.data;
+                var total = data.datasets[0].data.reduce(function(a,b){return a+b;},0);
+                return data.labels.map(function(label, i) {
+                  var val = data.datasets[0].data[i];
+                  var pct = ((val/total)*100).toFixed(1);
+                  return {
+                    text: label + ' — ' + pct + '%',
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    index: i
+                  };
+                });
+              }
+            },
+          },
+          tooltip: {
+            backgroundColor: TT.backgroundColor,
+            borderColor: TT.borderColor,
+            borderWidth: TT.borderWidth,
+            titleColor: TT.titleColor,
+            bodyColor: TT.bodyColor,
+            padding: TT.padding,
+            cornerRadius: TT.cornerRadius,
+            boxShadow: TT.boxShadow,
+            label: function(c) {
+              var total = c.dataset.data.reduce(function(a,b){return a+b;},0);
+              var pct = ((c.parsed / total)*100).toFixed(1);
+              return ' '+c.label+': '+c.parsed.toLocaleString()+' EGP ('+pct+'%)';
+            },
+          },
+        },
+      },
+    });
+  }
+
+  var ordersData = DATA.monthly.orders.length > 0 ? DATA.monthly.orders : DATA.yearly.orders;
+  var ordersLabels = DATA.monthly.labels.length > 0 ? DATA.monthly.labels : DATA.yearly.labels;
+
+  if (ordersLabels.length <= 1 && DATA.yearly.labels.length > 1) {
+    ordersData = DATA.yearly.orders;
+    ordersLabels = DATA.yearly.labels;
+  }
+
+  new Chart(document.getElementById('ordersChart'), {
+    type: 'bar',
+    data: {
+      labels: ordersLabels,
+      datasets: [{
+        label: 'Orders',
+        data: ordersData,
+        backgroundColor: 'rgba(37,99,235,0.15)',
+        borderColor: '#2563eb',
+        borderWidth: 2,
+        borderRadius: 10,
+        hoverBackgroundColor: 'rgba(37,99,235,0.3)',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: TT },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+        y: { grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { color: '#94a3b8' } },
+      },
+    },
+  });
+
+  var tb = document.getElementById('medTable');
+  if (MED_NAMES && MED_NAMES.length > 0) {
+    for (var i = 0; i < MED_NAMES.length; i++) {
+      var rc = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
+      tb.innerHTML +=
+        '<tr>' +
+          '<td><span class="rnk ' + rc + '">' + (i + 1) + '</span></td>' +
+          '<td style="font-weight:600;color:#111827">' + MED_NAMES[i] + '</td>' +
+          '<td><span class="pill pill-bl">' + MED_QTY[i].toLocaleString() + ' units</span></td>' +
+          '<td style="font-weight:800;color:#059669;font-size:15px">' + MED_REV[i].toLocaleString() + ' EGP</td>' +
+        '</tr>';
+    }
+  } else {
+    tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">No delivered orders yet</td></tr>';
+  }
+
+  function tick() {
+    document.getElementById('clock').textContent = new Date().toLocaleString(
+      'en-EG',
+      { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+    );
+  }
+  tick();
+  setInterval(tick, 1000);
+});
+</script>
+
+{% endblock %}

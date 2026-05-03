@@ -1,4 +1,4 @@
-{% load static %}
+{% load static socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +96,7 @@
                 <div class="social-login">
                     <p>Or continue with</p>
                     <div class="social-buttons">
-                        <a href="#" class="social-btn" aria-label="Sign in with Google">
+                        <a href="{% provider_login_url 'google' %}" class="social-btn" aria-label="Sign in with Google">
                             <i class="fab fa-google"></i>
                         </a>
                         <a href="#" class="social-btn" aria-label="Sign in with Facebook">
@@ -214,11 +214,15 @@
                             <input type="tel"
                                    name="phone"
                                    id="id_phone_signup"
-                                   placeholder="Phone Number"
+                                   placeholder="Egyptian Phone (e.g., 01012345678)"
                                    value="{{ form.phone.value|default:'' }}"
                                    autocomplete="tel"
                                    required
-                                   pattern="[0-9+\-\s]+">
+                                   pattern="^01[0125][0-9]{8}$"
+                                   maxlength="11"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);"
+                                   oninvalid="this.setCustomValidity('Please enter a valid Egyptian phone number (e.g., 01012345678)')"
+                                   oninput="this.setCustomValidity('')">
                         </div>
                         {% if form.phone.errors %}
                         <span class="field-error">{{ form.phone.errors.0 }}</span>
@@ -255,7 +259,7 @@
                 <div class="social-login">
                     <p>Or continue with</p>
                     <div class="social-buttons">
-                        <a href="#" class="social-btn" aria-label="Sign up with Google">
+                        <a href="{% provider_login_url 'google' %}" class="social-btn" aria-label="Sign up with Google">
                             <i class="fab fa-google"></i>
                         </a>
                         <a href="#" class="social-btn" aria-label="Sign up with Facebook">
