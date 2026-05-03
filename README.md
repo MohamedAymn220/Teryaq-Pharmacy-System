@@ -295,13 +295,13 @@ STATIC_URL=/static/
 STATIC_ROOT=BASE_DIR / 'staticfiles'
 ```
 ### 🗃️ Database ERD
-![ERD](docs/screenshots/erd.png)
+![ERD](docs/teryaq_erd.png)
 ---
 
 ## 📸 Screenshots | لقطات الشاشة
 ![Home Page](docs/home.png)
 ![Admin Dashboard](docs/dashboard.png)
-![Income Analytics](docs/analytics.png)
+![Income Analytics](docs/charts.png)
 
 
 | Page             | الصفحة           |
