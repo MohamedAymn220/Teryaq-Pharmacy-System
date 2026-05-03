@@ -299,9 +299,9 @@ STATIC_ROOT=BASE_DIR / 'staticfiles'
 ---
 
 ## 📸 Screenshots | لقطات الشاشة
-![Home Page](docs/screenshots/home.png)
-![Admin Dashboard](docs/screenshots/dashboard.png)
-![Income Analytics](docs/screenshots/analytics.png)
+![Home Page](docs/home.png)
+![Admin Dashboard](docs/dashboard.png)
+![Income Analytics](docs/analytics.png)
 
 
 | Page             | الصفحة           |
