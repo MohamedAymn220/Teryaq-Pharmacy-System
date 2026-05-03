@@ -301,6 +301,8 @@ STATIC_ROOT=BASE_DIR / 'staticfiles'
 ## 📸 Screenshots | لقطات الشاشة
 ![Home Page](docs/home.png)
 ![Admin Dashboard](docs/dashboard.png)
+![Admin Dashboard](docs/dashboard.png)
+![Admin Analytics](docs/Sleekshot3.png)
 ![Income Analytics](docs/charts.png)
 
 
