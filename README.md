@@ -1,4 +1,4 @@
-# 🏥 Teryaq Pharmacy (طرياق فارما)
+# 🏥 Teryaq Pharmacy (ترياق فارما)
 
 <div align="center">
 
@@ -43,12 +43,15 @@ Teryaq-Pharmacy-System/
 │   ├── dashboard_view.py  # Dashboard view
 │   ├── templates/store/    # HTML templates
 │   └── static/store/      # CSS/JS files
+|
 ├── docs/                   # Documentation
 │   ├── db_init.sql        # Database initialization
 │   └── nginx.conf         # Nginx config
+|
 ├── media/                  # User uploaded files
 │   ├── medicines/         # Product images
 │   └── category_images/   # Category images
+|
 ├── staticfiles/           # Collected static files
 ├── requirements.txt     # Python dependencies
 ├── manage.py           # Django management CLI
@@ -291,12 +294,15 @@ MEDIA_ROOT=BASE_DIR / 'media'
 STATIC_URL=/static/
 STATIC_ROOT=BASE_DIR / 'staticfiles'
 ```
-
+### 🗃️ Database ERD
+![ERD](docs/screenshots/erd.png)
 ---
 
 ## 📸 Screenshots | لقطات الشاشة
+![Home Page](docs/screenshots/home.png)
+![Admin Dashboard](docs/screenshots/dashboard.png)
+![Income Analytics](docs/screenshots/analytics.png)
 
-> ### Add your screenshots here | أضف لقطات الشاشة هنا
 
 | Page             | الصفحة           |
 | ---------------- | ---------------- |
