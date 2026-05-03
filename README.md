@@ -22,7 +22,7 @@ A full-featured online pharmacy management system built with Django 5.2 + Tailwi
 ## 📁 Project Structure | هيكل المشروع
 
 ```
-TeryaqPharma/
+Teryaq-Pharmacy-System/
 ├── TeryaqPharma/              # Django project settings
 │   ├── __init__.py
 │   ├── settings.py           # Project configuration
@@ -65,137 +65,145 @@ TeryaqPharma/
 ## 🗃️ Database Models | نماذج البيانات
 
 ### Profile | الملف الشخصي
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| user | المستخدم | OneToOneField(User) | User account |
-| role | الدور | CharField | admin/user |
-| profile_picture | صورة الملف | URLField | Avatar URL |
-| created_at | تاريخ الإنشاء | DateTimeField | Creation date |
-| updated_at | تاريخ التحديث | DateTimeField | Last update |
+
+| Field           | الحقل         | Type                | الوصف         |
+| --------------- | ------------- | ------------------- | ------------- |
+| user            | المستخدم      | OneToOneField(User) | User account  |
+| role            | الدور         | CharField           | admin/user    |
+| profile_picture | صورة الملف    | URLField            | Avatar URL    |
+| created_at      | تاريخ الإنشاء | DateTimeField       | Creation date |
+| updated_at      | تاريخ التحديث | DateTimeField       | Last update   |
 
 ### Category | الفئة
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| name | الاسم | CharField(100) | Category name |
-| description | الوصف | TextField | Description |
-| image | الصورة | ImageField | Category image |
+
+| Field       | الحقل  | Type           | الوصف          |
+| ----------- | ------ | -------------- | -------------- |
+| name        | الاسم  | CharField(100) | Category name  |
+| description | الوصف  | TextField      | Description    |
+| image       | الصورة | ImageField     | Category image |
 
 ### Medicine | الدواء
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| name | الاسم | CharField(100) | Medicine name |
-| description | الوصف | TextField | Description |
-| price | السعر | DecimalField | Price in EGP |
-| stock | المخزون | PositiveIntegerField | Available quantity |
-| category | الفئة | ForeignKey(Category) | Category |
-| image | الصورة | ImageField | Product image |
+
+| Field       | الحقل   | Type                 | الوصف              |
+| ----------- | ------- | -------------------- | ------------------ |
+| name        | الاسم   | CharField(100)       | Medicine name      |
+| description | الوصف   | TextField            | Description        |
+| price       | السعر   | DecimalField         | Price in EGP       |
+| stock       | المخزون | PositiveIntegerField | Available quantity |
+| category    | الفئة   | ForeignKey(Category) | Category           |
+| image       | الصورة  | ImageField           | Product image      |
 
 ### Order | الطلب
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| user | المستخدم | ForeignKey(User) | Customer |
-| created_at | تاريخ الإنشاء | DateTimeField | Order date |
-| completed | مكتمل | BooleanField | Is completed |
-| status | الحالة | CharField | pending/confirmed/processing/shipped/delivered/cancelled |
-| total_price | السعر الإجمالي | DecimalField | Total price |
+
+| Field       | الحقل          | Type             | الوصف                                                    |
+| ----------- | -------------- | ---------------- | -------------------------------------------------------- |
+| user        | المستخدم       | ForeignKey(User) | Customer                                                 |
+| created_at  | تاريخ الإنشاء  | DateTimeField    | Order date                                               |
+| completed   | مكتمل          | BooleanField     | Is completed                                             |
+| status      | الحالة         | CharField        | pending/confirmed/processing/shipped/delivered/cancelled |
+| total_price | السعر الإجمالي | DecimalField     | Total price                                              |
 
 ### OrderItem | عنصر الطلب
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| order | الطلب | ForeignKey(Order) | Order |
-| medicine | الدواء | ForeignKey(Medicine) | Product |
+
+| Field    | الحقل  | Type                 | الوصف    |
+| -------- | ------ | -------------------- | -------- |
+| order    | الطلب  | ForeignKey(Order)    | Order    |
+| medicine | الدواء | ForeignKey(Medicine) | Product  |
 | quantity | الكمية | PositiveIntegerField | Quantity |
 
 ### Payment | الدفع
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| order | الطلب | ForeignKey(Order) | Order |
-| amount | المبلغ | DecimalField | Amount paid |
-| status | الحالة | CharField | Payment status |
-| payment_method | طريقة الدفع | CharField | Payment method |
-| created_at | تاريخ الدفع | DateTimeField | Payment date |
+
+| Field          | الحقل       | Type              | الوصف          |
+| -------------- | ----------- | ----------------- | -------------- |
+| order          | الطلب       | ForeignKey(Order) | Order          |
+| amount         | المبلغ      | DecimalField      | Amount paid    |
+| status         | الحالة      | CharField         | Payment status |
+| payment_method | طريقة الدفع | CharField         | Payment method |
+| created_at     | تاريخ الدفع | DateTimeField     | Payment date   |
 
 ### Cart | السلة
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| user | المستخدم | OneToOneField(User) | Owner |
-| created_at | تاريخ الإنشاء | DateTimeField | Creation date |
-| updated_at | تاريخ التحديث | DateTimeField | Last update |
+
+| Field      | الحقل         | Type                | الوصف         |
+| ---------- | ------------- | ------------------- | ------------- |
+| user       | المستخدم      | OneToOneField(User) | Owner         |
+| created_at | تاريخ الإنشاء | DateTimeField       | Creation date |
+| updated_at | تاريخ التحديث | DateTimeField       | Last update   |
 
 ### CartItem | عنصر السلة
-| Field | الحقل | Type | الوصف |
-|-------|-------|------|-------|
-| cart | السلة | ForeignKey(Cart) | Cart |
-| medicine | الدواء | ForeignKey(Medicine) | Product |
-| quantity | الكمية | PositiveIntegerField | Quantity |
-| added_at | تاريخ الإضافة | DateTimeField | Addition date |
+
+| Field    | الحقل         | Type                 | الوصف         |
+| -------- | ------------- | -------------------- | ------------- |
+| cart     | السلة         | ForeignKey(Cart)     | Cart          |
+| medicine | الدواء        | ForeignKey(Medicine) | Product       |
+| quantity | الكمية        | PositiveIntegerField | Quantity      |
+| added_at | تاريخ الإضافة | DateTimeField        | Addition date |
 
 ---
 
 ## 📋 URL Routes | روابط الموقع
 
-| URL | View | الوصف |
-|-----|------|-------|
-| `/` | `home` | Home page - الرئيسية |
-| `/medicines/` | `medicine_list` | All medicines - جميع الأدوية |
-| `/medicine/<id>/` | `medicine_detail` | Medicine details - تفاصيل الدواء |
-| `/category/<id>/` | `category_detail` | Category detail - تفاصيل الفئة |
-| `/category/<id>/medicines/` | `medicines_by_category` | Medicines in category - أدوية الفئة |
-| `/search/` | `search_medicines` | Search results - نتائج البحث |
-| `/profile/` | `user_profile` | User profile - الملف الشخصي |
-| `/orders/` | `order_history` | Order history - سجل الطلبات |
-| `/orders/<id>/` | `order_detail` | Order details - تفاصيل الطلب |
-| `/dashboard/` | `dashboard` | Admin dashboard - لوحة الإدارة |
-| `/dashboard/income/` | `income_dashboard` | Income analytics - تحليل الإيرادات |
-| `/category/add/` | `category_add` | Add category - إضافة فئة |
-| `/category/edit/<id>/` | `category_edit` | Edit category - تعديل فئة |
-| `/category/delete/<id>/` | `category_delete` | Delete category - حذف فئة |
-| `/medicine/add/` | `medicine_add` | Add medicine - إضافة دواء |
-| `/medicine/edit/<id>/` | `medicine_edit` | Edit medicine - تعديل دواء |
-| `/medicine/delete/<id>/` | `medicine_delete` | Delete medicine - حذف دواء |
-| `/cart/` | `cart_view` | Shopping cart - سلة التسوق |
-| `/cart/add/<id>/` | `add_to_cart` | Add to cart - إضافة للسلة |
-| `/cart/update/<id>/` | `update_cart_quantity` | Update quantity - تحديث الكمية |
-| `/cart/remove/<id>/` | `remove_from_cart` | Remove from cart - حذف من الس��ة |
-| `/checkout/` | `checkout` | Checkout - الدفع |
-| `/order-success/<id>/` | `order_success` | Order success - نجاح الطلب |
-| `/order/<id>/update-status/` | `update_order_status` | Update status - تحديث الحالة |
-| `/ajax/search/` | `ajax_search` | AJAX search - بحث فوري |
-| `/auth/` | `auth_view` | Login/Register - تسجيل الدخول |
-| `/logout/` | `logout_view` | Logout - تسجيل الخروج |
+| URL                          | View                    | الوصف                               |
+| ---------------------------- | ----------------------- | ----------------------------------- |
+| `/`                          | `home`                  | Home page - الرئيسية                |
+| `/medicines/`                | `medicine_list`         | All medicines - جميع الأدوية        |
+| `/medicine/<id>/`            | `medicine_detail`       | Medicine details - تفاصيل الدواء    |
+| `/category/<id>/`            | `category_detail`       | Category detail - تفاصيل الفئة      |
+| `/category/<id>/medicines/`  | `medicines_by_category` | Medicines in category - أدوية الفئة |
+| `/search/`                   | `search_medicines`      | Search results - نتائج البحث        |
+| `/profile/`                  | `user_profile`          | User profile - الملف الشخصي         |
+| `/orders/`                   | `order_history`         | Order history - سجل الطلبات         |
+| `/orders/<id>/`              | `order_detail`          | Order details - تفاصيل الطلب        |
+| `/dashboard/`                | `dashboard`             | Admin dashboard - لوحة الإدارة      |
+| `/dashboard/income/`         | `income_dashboard`      | Income analytics - تحليل الإيرادات  |
+| `/category/add/`             | `category_add`          | Add category - إضافة فئة            |
+| `/category/edit/<id>/`       | `category_edit`         | Edit category - تعديل فئة           |
+| `/category/delete/<id>/`     | `category_delete`       | Delete category - حذف فئة           |
+| `/medicine/add/`             | `medicine_add`          | Add medicine - إضافة دواء           |
+| `/medicine/edit/<id>/`       | `medicine_edit`         | Edit medicine - تعديل دواء          |
+| `/medicine/delete/<id>/`     | `medicine_delete`       | Delete medicine - حذف دواء          |
+| `/cart/`                     | `cart_view`             | Shopping cart - سلة التسوق          |
+| `/cart/add/<id>/`            | `add_to_cart`           | Add to cart - إضافة للسلة           |
+| `/cart/update/<id>/`         | `update_cart_quantity`  | Update quantity - تحديث الكمية      |
+| `/cart/remove/<id>/`         | `remove_from_cart`      | Remove from cart - حذف من الس��ة    |
+| `/checkout/`                 | `checkout`              | Checkout - الدفع                    |
+| `/order-success/<id>/`       | `order_success`         | Order success - نجاح الطلب          |
+| `/order/<id>/update-status/` | `update_order_status`   | Update status - تحديث الحالة        |
+| `/ajax/search/`              | `ajax_search`           | AJAX search - بحث فوري              |
+| `/auth/`                     | `auth_view`             | Login/Register - تسجيل الدخول       |
+| `/logout/`                   | `logout_view`           | Logout - تسجيل الخروج               |
 
 ---
 
 ## ✨ Features | المميزات
 
-| Feature | الوصف |
-|---------|-------|
+| Feature                    | الوصف                               |
+| -------------------------- | ----------------------------------- |
 | 🔐 **User Authentication** | تسجيل الدخول/التسجيل مع دورات مخصصة |
-| 💊 **Medicine Catalog** | كتالوج الأدوية مع تصفية حسب الفئة |
-| 🏷️ **Categories** | فئات المنتجات مع صور |
-| 🛒 **Shopping Cart** | نظام سلة تسوق متكامل |
-| 📦 **Order Management** | إدارة الطلبات مع تتبع الحالة |
-| 📊 **Admin Dashboard** | لوحة تحكم_ADMIN مع عمليات CRUD |
-| 📈 **Income Analytics** | تحليل الإيرادات مع Chart.js |
-| 🔍 **Live Search** | بحث AJAX فوري |
-| 📱 **Responsive Design** | تصميم متجاوب مع Tailwind CSS |
-| 🎨 **Modern UI** | واجهة مستخدم عصرية وأنيقة |
+| 💊 **Medicine Catalog**    | كتالوج الأدوية مع تصفية حسب الفئة   |
+| 🏷️ **Categories**          | فئات المنتجات مع صور                |
+| 🛒 **Shopping Cart**       | نظام سلة تسوق متكامل                |
+| 📦 **Order Management**    | إدارة الطلبات مع تتبع الحالة        |
+| 📊 **Admin Dashboard**     | لوحة تحكم_ADMIN مع عمليات CRUD      |
+| 📈 **Income Analytics**    | تحليل الإيرادات مع Chart.js         |
+| 🔍 **Live Search**         | بحث AJAX فوري                       |
+| 📱 **Responsive Design**   | تصميم متجاوب مع Tailwind CSS        |
+| 🎨 **Modern UI**           | واجهة مستخدم عصرية وأنيقة           |
 
 ---
 
 ## 🛠️ Tech Stack | التقنيات
 
-| Category | Technology | الإصدار |
-|----------|-------------|---------|
-| **Backend** | Django | 5.2+ |
-| **Backend** | Python | 3.13 |
-| **Frontend** | Tailwind CSS | 3.4 |
-| **Frontend** | Chart.js | 4.4 |
-| **Frontend** | Vanilla JS | ES6+ |
-| **Database** | SQLite | 3 |
-| **Image Processing** | Pillow | 10+ |
-| **Static Files** | Whitenoise | 6+ |
-| **Authentication** | Django Auth | Built-in |
+| Category             | Technology   | الإصدار  |
+| -------------------- | ------------ | -------- |
+| **Backend**          | Django       | 5.2+     |
+| **Backend**          | Python       | 3.13     |
+| **Frontend**         | Tailwind CSS | 3.4      |
+| **Frontend**         | Chart.js     | 4.4      |
+| **Frontend**         | Vanilla JS   | ES6+     |
+| **Database**         | SQLite       | 3        |
+| **Image Processing** | Pillow       | 10+      |
+| **Static Files**     | Whitenoise   | 6+       |
+| **Authentication**   | Django Auth  | Built-in |
 
 ---
 
@@ -204,8 +212,8 @@ TeryaqPharma/
 ### 1. Clone the Repository | استنساخ المشروع
 
 ```bash
-git clone https://github.com/abdelrahman-ahmed-nassar/TeryaqPharma.git
-cd TeryaqPharma
+git clone https://github.com/MohamedAymn220/Teryaq-Pharmacy-System.git
+cd Teryaq-Pharmacy-System
 ```
 
 ### 2. Create Virtual Environment | إنشاء بيئة افتراضية
@@ -254,11 +262,11 @@ python manage.py runserver
 
 ### 8. Access the Application | الوصول للتطبيق
 
-| URL | الوصف |
-|-----|-------|
-| http://127.0.0.1:8000/ | Main store |
+| URL                              | الوصف           |
+| -------------------------------- | --------------- |
+| http://127.0.0.1:8000/           | Main store      |
 | http://127.0.0.1:8000/dashboard/ | Admin dashboard |
-| http://127.0.0.1:8000/auth/ | Login/Register |
+| http://127.0.0.1:8000/auth/      | Login/Register  |
 
 ---
 
@@ -290,12 +298,12 @@ STATIC_ROOT=BASE_DIR / 'staticfiles'
 
 > ### Add your screenshots here | أضف لقطات الشاشة هنا
 
-| Page | الصفحة |
-|------|---------|
-| Home | الرئيسية |
-| Medicine List | قائمة الأدوية |
-| Cart | السلة |
-| Dashboard | لوحة التحكم |
+| Page             | الصفحة           |
+| ---------------- | ---------------- |
+| Home             | الرئيسية         |
+| Medicine List    | قائمة الأدوية    |
+| Cart             | السلة            |
+| Dashboard        | لوحة التحكم      |
 | Income Analytics | تحليل الإيراد��ت |
 
 ---
@@ -314,9 +322,9 @@ STATIC_ROOT=BASE_DIR / 'staticfiles'
 
 <div align="center">
 
-**Mohamed Ayman AbdelFatah**
+**Mohamed Ayman**
 
-[![GitHub](https://img.shields.io/badge/GitHub-abdelrahman--ahmed--nassar-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abdelrahman-ahmed-nassar)
+[![GitHub](https://img.shields.io/badge/GitHub-MohamedAymn220-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MohamedAymn220)
 [![Email](https://img.shields.io/badge/Email-mohamedayman_@outlook.com-D14836?style=for-the-badge&logo=microsoft-outlook&logoColor=white)](mailto:mohamedayman_@outlook.com)
 
 </div>
@@ -325,6 +333,6 @@ STATIC_ROOT=BASE_DIR / 'staticfiles'
 
 <div align="center">
 
-**Made with ❤️ in Egypt**
+**Made with Mohamed Ayaman❤️ in Egypt**
 
 </div>
